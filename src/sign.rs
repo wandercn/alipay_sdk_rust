@@ -144,7 +144,8 @@ const kPrivateKeyType: &str = "PRIVATE KEY";
 const kRSAPrivateKeyType: &str = "RSA PRIVATE KEY";
 
 pub fn format_pkcs1_private_key(raw: &str) -> Vec<byte> {
-    format_key(raw, kPKCS1Prefix, KPKCS1Suffix, 64)
+    raw.as_bytes().to_vec()
+    // format_key(raw, kPKCS1Prefix, KPKCS1Suffix, 64)
 }
 
 pub fn format_pkcs8_private_key(raw: &str) -> Vec<byte> {
