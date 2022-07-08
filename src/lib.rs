@@ -16,9 +16,8 @@ mod tests {
     #[test]
     fn test_sign() -> std::io::Result<()> {
         let project_dir = env!("CARGO_MANIFEST_DIR");
-        dbg!(project_dir);
         let private_key_str: String =
-            std::fs::read_to_string(format!("{}/{}", project_dir, PRIVATE_KEY_FILE))?;
+            std::fs::read_to_string(format!("{}/{}", dbg!(project_dir), PRIVATE_KEY_FILE))?;
         let mut sign = builder().sign_type_rsa2().build();
         sign.set_private_key(&private_key_str)?;
         let public_key_str =
@@ -27,15 +26,12 @@ mod tests {
 
         let mut source_split = strings::Split(SOURCE_URL, "&");
         source_split.sort();
-        dbg!(&source_split);
 
-        let sorted_source = strings::Join(source_split, "&");
+        let sorted_source = strings::Join(dbg!(source_split), "&");
 
         let signature = sign.sign(&sorted_source)?;
-        dbg!(&signature);
-        let is_passed = sign.verify(&sorted_source, &signature)?;
-        dbg!(&is_passed);
-        assert_eq!(true, is_passed);
+        let is_passed = sign.verify(&sorted_source, dbg!(&signature))?;
+        assert_eq!(true, dbg!(is_passed));
         Ok(())
     }
 }
