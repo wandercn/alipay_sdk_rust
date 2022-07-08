@@ -106,7 +106,7 @@ impl Requester for Request {
         strings::Split(&sign_sorted_source, "&")
             .iter()
             .for_each(|v| {
-                let mut splites: Vec<String> = strings::Split(&v, "=")
+                let mut splites: Vec<String> = strings::Split(v, "=")
                     .iter()
                     .map(|x| x.to_string())
                     .collect();

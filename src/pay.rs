@@ -165,9 +165,9 @@ impl Payer for PayClient {
 
         match biz_content.method().as_str() {
             "alipay.trade.wap.pay" | "alipay.trade.page.pay" => {
-                return self.create_clien_page_form(biz_content);
+                self.create_clien_page_form(biz_content)
             }
-            "alipay.trade.app.pay" => return self.create_clien_sdkt_request(biz_content),
+            "alipay.trade.app.pay" => self.create_clien_sdkt_request(biz_content),
             _ => {
                 let mut request = Request::new_with_config(self.borrow());
                 request

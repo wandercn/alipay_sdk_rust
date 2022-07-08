@@ -1,26 +1,19 @@
 #![allow(unused)]
 use base64;
 use gostd::{
-    builtin::*,
     bytes,
     io::{ByteWriter, StringWriter},
 };
 use rsa::{
-    pkcs1::{DecodeRsaPrivateKey, DecodeRsaPublicKey},
-    pkcs8::DecodePublicKey,
-    Hash, PaddingScheme, PublicKey, RsaPrivateKey, RsaPublicKey,
+    pkcs1::DecodeRsaPrivateKey, pkcs8::DecodePublicKey, Hash, PaddingScheme, PublicKey,
+    RsaPrivateKey, RsaPublicKey,
 };
 use std::{
-    borrow::{Borrow, BorrowMut},
+    borrow::BorrowMut,
     io::{Error, ErrorKind, Result},
 };
 
 use sha2::{Digest, Sha256};
-
-use crate::{
-    biz::{self, BizContenter},
-    util::json_get,
-};
 
 pub trait Signer {
     fn set_private_key(&mut self, private_key_str: &str) -> Result<()>;
@@ -138,29 +131,25 @@ pub fn load_public_key(public_key_str: &str) -> Result<RsaPublicKey> {
     }
 }
 
-const kPublicKeyPrefix: &str = "-----BEGIN PUBLIC KEY-----";
-const kPublicKeySuffix: &str = "-----END PUBLIC KEY-----";
+const PUBLIC_KEY_PREFIX: &str = "-----BEGIN PUBLIC KEY-----";
+const PUBLIC_KEY_SUFFIX: &str = "-----END PUBLIC KEY-----";
 
-const kPKCS1Prefix: &str = "-----BEGIN RSA PRIVATE KEY-----";
-const KPKCS1Suffix: &str = "-----END RSA PRIVATE KEY-----";
+const PKCS1_PREFIX: &str = "-----BEGIN RSA PRIVATE KEY-----";
+const PKCS1_SUFFIX: &str = "-----END RSA PRIVATE KEY-----";
 
-const kPKCS8Prefix: &str = "-----BEGIN PRIVATE KEY-----";
-const KPKCS8Suffix: &str = "-----END PRIVATE KEY-----";
-
-const kPublicKeyType: &str = "PUBLIC KEY";
-const kPrivateKeyType: &str = "PRIVATE KEY";
-const kRSAPrivateKeyType: &str = "RSA PRIVATE KEY";
+const PKCS8_PREFIX: &str = "-----BEGIN PRIVATE KEY-----";
+const PKCS8_SUFFIX: &str = "-----END PRIVATE KEY-----";
 
 pub fn format_pkcs1_private_key(raw: &str) -> String {
-    format_key(raw, kPKCS1Prefix, KPKCS1Suffix, 64)
+    format_key(raw, PKCS1_PREFIX, PKCS1_SUFFIX, 64)
 }
 
 pub fn format_pkcs8_private_key(raw: &str) -> String {
-    format_key(raw, kPKCS8Prefix, KPKCS8Suffix, 64)
+    format_key(raw, PKCS8_PREFIX, PKCS8_SUFFIX, 64)
 }
 
 pub fn format_pem_public_key(raw: &str) -> String {
-    format_key(raw, kPublicKeyPrefix, kPublicKeySuffix, 64)
+    format_key(raw, PUBLIC_KEY_PREFIX, PUBLIC_KEY_SUFFIX, 64)
 }
 
 fn format_key(raw: &str, prefix: &str, suffix: &str, line_count: usize) -> String {
@@ -188,5 +177,5 @@ fn format_key(raw: &str, prefix: &str, suffix: &str, line_count: usize) -> Strin
     }
     buffer.WriteString(suffix);
     buffer.WriteString("\n");
-    return buffer.String();
+    buffer.String()
 }

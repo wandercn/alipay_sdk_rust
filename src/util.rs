@@ -24,7 +24,7 @@ pub fn get_now_beijing_time_str() -> String {
 }
 
 pub fn get_out_trade_no() -> String {
-    return Uuid::new_v4().to_string();
+    Uuid::new_v4().to_string()
 }
 
 pub fn response_to_json<'a>(body: &'a [byte], mut res: impl Deserialize<'a>) -> Result<()> {
@@ -54,9 +54,9 @@ fn build_hidden_fields(parameters: &mut HashMap<String, String>) -> String {
         if value.is_empty() {
             continue;
         }
-        buf.WriteString(&build_hidden_field(&key, &value));
+        buf.WriteString(&build_hidden_field(key, value));
     }
-    return buf.String();
+    buf.String()
 }
 
 fn build_hidden_field(key: &str, value: &str) -> String {
@@ -68,7 +68,7 @@ fn build_hidden_field(key: &str, value: &str) -> String {
     let a = strings::ReplaceAll(value, "\"", "&quot;");
     buf.WriteString(&a);
     buf.WriteString("\">\n");
-    return buf.String();
+    buf.String()
 }
 
 // 只支持value是{}或[]或""包裹的key，不支持数字
@@ -94,7 +94,7 @@ pub fn json_get(result: &str, key: &str) -> String {
                 left_brackets += 1;
             }
 
-            if left_brackets > 0 && current == b'}' || left_brackets > 0 && current == b']' {
+            if (current == b']' || current == b'}') && left_brackets > 0 {
                 index += 1;
                 left_brackets -= 1;
                 current = result.as_bytes()[index];
