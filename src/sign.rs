@@ -1,5 +1,4 @@
 #![allow(unused)]
-use sha2::{Sha256, Digest};
 use base64;
 use gostd::{
     builtin::*,
@@ -8,12 +7,15 @@ use gostd::{
 };
 use rsa::{
     pkcs1::{DecodeRsaPrivateKey, DecodeRsaPublicKey},
-    RsaPrivateKey, RsaPublicKey, Hash, PaddingScheme,PublicKey 
+    pkcs8::DecodePublicKey,
+    Hash, PaddingScheme, PublicKey, RsaPrivateKey, RsaPublicKey,
 };
 use std::{
     borrow::{Borrow, BorrowMut},
     io::{Error, ErrorKind, Result},
 };
+
+use sha2::{Digest, Sha256};
 
 use crate::{
     biz::{self, BizContenter},
@@ -72,28 +74,34 @@ impl Signer for SignSHA256WithRSA {
 
     fn sign(&self, source: &str) -> Result<String> {
         let digest = Sha256::digest(source.as_bytes());
-      if self.private_key.is_none(){
-        return Err(Error::new(ErrorKind::Other,"private_key is None")) ;
-      }
-       if let Ok(signature_byte)= self.private_key.as_ref().unwrap().sign( PaddingScheme::new_pkcs1v15_sign(Some(Hash::SHA2_256)), digest.as_slice()){
-        Ok(base64::encode(signature_byte))
-       }else{
-        Err(Error::new(ErrorKind::Other,"pkcs1v15_sign failed"))
-       }
+        if self.private_key.is_none() {
+            return Err(Error::new(ErrorKind::Other, "private_key is None"));
+        }
+        if let Ok(signature_byte) = self.private_key.as_ref().unwrap().sign(
+            PaddingScheme::new_pkcs1v15_sign(Some(Hash::SHA2_256)),
+            digest.as_slice(),
+        ) {
+            Ok(base64::encode(signature_byte))
+        } else {
+            Err(Error::new(ErrorKind::Other, "pkcs1v15_sign failed"))
+        }
     }
 
     fn verify(&self, source: &str, signature: &str) -> Result<bool> {
         let mut hashed = Sha256::new();
-        hashed.update(source);
-        match self.public_key.as_ref().unwrap().verify(
-            PaddingScheme::new_pkcs1v15_sign(Some(Hash::SHA2_256)),
-             &hashed.finalize(), 
-             signature.as_bytes()){
-                Ok(())=>Ok(true),
-                Err(err)=> Err(err),
-             };
-       
-             Ok(false)
+        hashed.update(source.as_bytes());
+        if let Ok(decode_signature) = base64::decode(signature) {
+            match self.public_key.as_ref().unwrap().verify(
+                PaddingScheme::new_pkcs1v15_sign(Some(Hash::SHA2_256)),
+                &hashed.finalize(),
+                &decode_signature,
+            ) {
+                Ok(()) => Ok(true),
+                Err(err) => Ok(false),
+            }
+        } else {
+            Err(Error::new(ErrorKind::Other, "base64 decode signature"))
+        }
     }
 
     // SetPublicKey 通过RSA文字字符串设置RSA私钥
@@ -106,26 +114,26 @@ impl Signer for SignSHA256WithRSA {
 
 pub fn load_private_key(private_key_str: &str) -> Result<RsaPrivateKey> {
     if let Ok(private_key) =
-        RsaPrivateKey::from_pkcs1_der(&format_pkcs1_private_key(private_key_str))
+        RsaPrivateKey::from_pkcs1_pem(&format_pkcs1_private_key(private_key_str))
     {
         Ok(private_key)
     } else {
         Err(Error::new(
             ErrorKind::Other,
-            "RsaPrivateKey from_pkcs1_der failed",
+            "RsaPrivateKey from_pkcs1_pem failed",
         ))
     }
 }
 
 pub fn load_public_key(public_key_str: &str) -> Result<RsaPublicKey> {
     if let Ok(public_key) =
-        RsaPublicKey::from_pkcs1_der(format_public_key(public_key_str).as_slice())
+        RsaPublicKey::from_public_key_pem(&format_pem_public_key(public_key_str))
     {
         Ok(public_key)
     } else {
         Err(Error::new(
             ErrorKind::Other,
-            "RsaPublicKey from_pkcs1_der failed",
+            "RsaPublicKey from_public_key_pem failed",
         ))
     }
 }
@@ -143,20 +151,19 @@ const kPublicKeyType: &str = "PUBLIC KEY";
 const kPrivateKeyType: &str = "PRIVATE KEY";
 const kRSAPrivateKeyType: &str = "RSA PRIVATE KEY";
 
-pub fn format_pkcs1_private_key(raw: &str) -> Vec<byte> {
-    raw.as_bytes().to_vec()
-    // format_key(raw, kPKCS1Prefix, KPKCS1Suffix, 64)
+pub fn format_pkcs1_private_key(raw: &str) -> String {
+    format_key(raw, kPKCS1Prefix, KPKCS1Suffix, 64)
 }
 
-pub fn format_pkcs8_private_key(raw: &str) -> Vec<byte> {
+pub fn format_pkcs8_private_key(raw: &str) -> String {
     format_key(raw, kPKCS8Prefix, KPKCS8Suffix, 64)
 }
 
-pub fn format_public_key(raw: &str) -> Vec<byte> {
+pub fn format_pem_public_key(raw: &str) -> String {
     format_key(raw, kPublicKeyPrefix, kPublicKeySuffix, 64)
 }
 
-fn format_key(raw: &str, prefix: &str, suffix: &str, line_count: usize) -> Vec<byte> {
+fn format_key(raw: &str, prefix: &str, suffix: &str, line_count: usize) -> String {
     let mut buffer = bytes::Buffer::new();
     buffer.WriteString(prefix);
     buffer.WriteString("\n");
@@ -181,5 +188,5 @@ fn format_key(raw: &str, prefix: &str, suffix: &str, line_count: usize) -> Vec<b
     }
     buffer.WriteString(suffix);
     buffer.WriteString("\n");
-    return buffer.Bytes();
+    return buffer.String();
 }
