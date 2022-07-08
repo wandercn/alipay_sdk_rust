@@ -2,7 +2,7 @@
 use super::{BizContenter, BizObject};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Default)]
 pub struct TradePrecreateBiz(BizObject);
 
 impl BizContenter for TradePrecreateBiz {

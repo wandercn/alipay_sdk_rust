@@ -2,7 +2,7 @@
 use super::{BizContenter, BizObject};
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Default)]
 pub struct TradeFastpayRefundQueryBiz(BizObject);
 
 impl BizContenter for TradeFastpayRefundQueryBiz {

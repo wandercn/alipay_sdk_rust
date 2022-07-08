@@ -10,5 +10,5 @@ pub type BizObject = HashMap<String, String>;
 
 pub fn get_response_key(biz: &impl BizContenter) -> String {
     let method = biz.method() + ".response";
-    return strings::ReplaceAll(method, ".", "_");
+    strings::ReplaceAll(method, ".", "_")
 }
