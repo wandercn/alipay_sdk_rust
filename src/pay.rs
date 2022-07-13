@@ -429,9 +429,7 @@ impl PayClient {
 
                 let get_signture = || -> String { json_get(result, "sign") };
 
-                let mut singer = builder()
-                    .set_sign_type(self.sign_type().as_str())
-                    .build();
+                let mut singer = builder().set_sign_type(self.sign_type().as_str()).build();
 
                 singer.set_public_key(self.alipay_public_key().as_str())?;
                 let passed = singer.verify(&get_raw_source(), &get_signture())?;
@@ -464,7 +462,7 @@ impl PayClient {
         }
     }
 
-    pub fn create_clien_page_form(&self, biz: &impl BizContenter) -> Result<Vec<byte>> {
+    fn create_clien_page_form(&self, biz: &impl BizContenter) -> Result<Vec<byte>> {
         let encode_query = Request::new_with_config(self.borrow())
             .set_biz_content(biz)
             .set_method(biz.method().as_str())
@@ -481,7 +479,7 @@ impl PayClient {
         Ok(form)
     }
 
-    pub fn create_clien_sdkt_request(&self, biz: &impl BizContenter) -> Result<Vec<byte>> {
+    fn create_clien_sdkt_request(&self, biz: &impl BizContenter) -> Result<Vec<byte>> {
         let client_sdk_request = Request::new_with_config(self.borrow())
             .set_biz_content(biz)
             .set_method(biz.method().as_str())
