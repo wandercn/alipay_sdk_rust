@@ -1,4 +1,3 @@
-pub mod api;
 pub mod biz;
 pub mod pay;
 pub mod request;
