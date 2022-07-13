@@ -14,9 +14,10 @@
 //! use alipay_sdk_rust::pay::{PayClient, Payer};
 //! use alipay_sdk_rust::response::TradeCreateResponse;
 //! fn main() -> Result<()> {
+//! let out_trade_no = gostd::time::Now().UnixNano().to_string();
 //!     let mut biz_content = biz::TradeCreateBiz::new();
 //!     biz_content.set_subject("huawei Mate50");
-//!     biz_content.set_out_trade_no("1620630871769533112");
+//!     biz_content.set_out_trade_no(&out_trade_no); // "1620630871769533112"
 //!     biz_content.set_total_amount("5");
 //!     biz_content.set("seller_id", "2088621955702975");
 //!     biz_content.set_buyer_id("2088102175953034");
