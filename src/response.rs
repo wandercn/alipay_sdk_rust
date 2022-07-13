@@ -1,3 +1,4 @@
+//! 返回值结构体定义。
 use serde_with::skip_serializing_none;
 use std::collections::HashMap;
 

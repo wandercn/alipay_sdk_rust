@@ -1,3 +1,4 @@
+//! 签名验证模块
 #![allow(unused)]
 use base64;
 use gostd::{
@@ -14,7 +15,7 @@ use std::{
 };
 
 use sha2::{Digest, Sha256};
-
+/// 签名接口
 pub trait Signer {
     fn set_private_key(&mut self, private_key_str: &str) -> Result<()>;
     fn sign(&self, source: &str) -> Result<String>;
@@ -22,6 +23,7 @@ pub trait Signer {
     fn set_public_key(&mut self, public_key_str: &str) -> Result<()>;
 }
 
+/// 构造器
 pub struct SignerBuiler {
     rsa2: bool,
 }

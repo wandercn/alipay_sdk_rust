@@ -1,18 +1,20 @@
-#![allow(unused)]
+//! 其他帮助函数模块
+// #![allow(unused)]
+
 use super::biz::BizContenter;
 use gostd::builtin::len;
 use gostd::io::StringWriter;
+use gostd::strings;
 use gostd::time;
-use gostd::{builtin::byte, strings};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use serde_json;
-use std::{collections::HashMap, io::Result};
+use std::collections::HashMap;
 use uuid::Uuid;
 
 pub fn get_biz_content_str(w: &(impl BizContenter + Serialize)) -> String {
     match serde_json::to_string(w) {
         Ok(res) => res,
-        Err(err) => "".to_owned(),
+        Err(_) => "".to_owned(),
     }
 }
 

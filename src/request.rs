@@ -1,3 +1,4 @@
+//! 请求构造模块，初始化公共请求参数。
 #![allow(unused)]
 use gostd::{net::url, strings};
 use serde::{Deserialize, Serialize};
@@ -22,6 +23,7 @@ pub trait Requester {
     fn encode_payload(&mut self) -> Result<String>;
 }
 
+/// 实现 Requester 接口的各种方法
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Request {
     // 是否必填	最大长度	描述	示例值

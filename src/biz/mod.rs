@@ -1,3 +1,4 @@
+//! 请求参数模块,构造各种接口的独立请求参数。
 mod biz_content;
 pub use biz_content::*;
 mod trade_app_pay;
