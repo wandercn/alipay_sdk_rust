@@ -1,4 +1,12 @@
-# alipay_sdk_rust
+# [alipay_sdk_rust](https://github.com/wandercn/alipay_sdk_rust)
+
+[![crates.io](https://img.shields.io/crates/v/alipay_sdk_rust.svg?color=yellow)](https://crates.io/crates/alipay_sdk_rust)
+[![Released API docs](https://docs.rs/alipay_sdk_rust/badge.svg)](https://docs.rs/alipay_sdk_rust)
+[![GPL3 licensed](https://img.shields.io/github/license/wandercn/alipay_sdk_rust.svg)](./LICENSE)
+[![Downloads of Crates.io](https://img.shields.io/crates/d/alipay_sdk_rust.svg)](https://crates.io/crates/alipay_sdk_rust)
+[![Lines of code](https://img.shields.io/tokei/lines/github/wandercn/alipay_sdk_rust.svg)](#)
+[![Build](https://img.shields.io/github/workflow/status/wandercn/alipay_sdk_rust/Rust.svg)](#)
+[![Languages](https://img.shields.io/github/languages/top/wandercn/alipay_sdk_rust.svg)](#)
 
  Alipay sdk in rust 支付宝支付 SDK。只支持最安全的RSA2，公钥证书方式签名验证方式,默认只支持utf-8编码。
 
