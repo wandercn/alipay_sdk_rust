@@ -16,7 +16,7 @@ use std::{
 };
 
 pub trait Requester {
-    fn new_with_config(pay_config: &impl Payer) -> Self;
+    fn new_with_config(pay_config: &PayClient) -> Self;
     fn set_method(&mut self, method: &str) -> &mut Self;
     fn method(&self) -> String;
     fn set_biz_content(&mut self, b: &impl BizContenter) -> &mut Self;
@@ -68,17 +68,17 @@ impl Request {
 }
 
 impl Requester for Request {
-    fn new_with_config(pay_config: &impl Payer) -> Self {
+    fn new_with_config(pay_config: &PayClient) -> Self {
         Self {
-            private_key: pay_config.get_private_key(),
-            public_key: pay_config.get_alipay_public_key(),
-            app_cert_sn: pay_config.get_app_cert_sn(),
-            alipay_root_cert_sn: pay_config.get_alipay_root_cert_sn(),
-            app_id: pay_config.get_app_id(),
-            format: pay_config.get_format(),
-            charset: pay_config.get_charset(),
-            sign_type: pay_config.get_sign_type(),
-            version: pay_config.get_version(),
+            private_key: pay_config.private_key(),
+            public_key: pay_config.alipay_public_key(),
+            app_cert_sn: pay_config.app_cert_sn(),
+            alipay_root_cert_sn: pay_config.alipay_root_cert_sn(),
+            app_id: pay_config.app_id(),
+            format: pay_config.format(),
+            charset: pay_config.charset(),
+            sign_type: pay_config.sign_type(),
+            version: pay_config.version(),
             timestamp: get_now_beijing_time_str(),
             ..Default::default()
         }
