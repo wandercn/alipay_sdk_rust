@@ -249,6 +249,7 @@ impl Payer for PayClient {
         let body = self.do_alipay(biz_content)?;
         let res: TradeCreateResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
+            log::debug!("{}", serde_json::to_string(&res)?);
             return Err(Error::new(
                 ErrorKind::Other,
                 format!(
@@ -258,7 +259,6 @@ impl Payer for PayClient {
                 ),
             ));
         }
-
         Ok(res)
     }
 
@@ -269,6 +269,7 @@ impl Payer for PayClient {
         let body = self.do_alipay(biz_content)?;
         let res: TradePayResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
+            log::debug!("{}", serde_json::to_string(&res)?);
             return Err(Error::new(
                 ErrorKind::Other,
                 format!(
@@ -288,6 +289,7 @@ impl Payer for PayClient {
         let body = self.do_alipay(biz_content)?;
         let res: TradePrecreateResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
+            log::debug!("{}", serde_json::to_string(&res)?);
             return Err(Error::new(
                 ErrorKind::Other,
                 format!(
@@ -334,6 +336,7 @@ impl Payer for PayClient {
         let body = self.do_alipay(biz_content)?;
         let res: TradeQueryResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
+            log::debug!("{}", serde_json::to_string(&res)?);
             return Err(Error::new(
                 ErrorKind::Other,
                 format!(
@@ -353,6 +356,7 @@ impl Payer for PayClient {
         let body = self.do_alipay(biz_content)?;
         let res: TradeCancelResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
+            log::debug!("{}", serde_json::to_string(&res)?);
             return Err(Error::new(
                 ErrorKind::Other,
                 format!(
@@ -372,6 +376,7 @@ impl Payer for PayClient {
         let body = self.do_alipay(biz_content)?;
         let res: TradeRefundResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
+            log::debug!("{}", serde_json::to_string(&res)?);
             return Err(Error::new(
                 ErrorKind::Other,
                 format!(
@@ -394,6 +399,7 @@ impl Payer for PayClient {
         let body = self.do_alipay(biz_content)?;
         let res: TradePageRefundResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
+            log::debug!("{}", serde_json::to_string(&res)?);
             return Err(Error::new(
                 ErrorKind::Other,
                 format!(
@@ -415,6 +421,7 @@ impl Payer for PayClient {
         let body = self.do_alipay(biz_content)?;
         let res: TradeFastpayRefundQueryResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
+            log::debug!("{}", serde_json::to_string(&res)?);
             return Err(Error::new(
                 ErrorKind::Other,
                 format!(
@@ -434,6 +441,7 @@ impl Payer for PayClient {
         let body = self.do_alipay(biz_content)?;
         let res: TradeCloseResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
+            log::debug!("{}", serde_json::to_string(&res)?);
             return Err(Error::new(
                 ErrorKind::Other,
                 format!(

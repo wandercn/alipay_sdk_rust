@@ -1,7 +1,7 @@
 [package]
 name = "alipay_sdk_rust"
 license = "MIT"
-version = "1.0.0"
+version = "1.0.1"
 edition = "2018"
 authors = ["wandercn<wander@ffactory.org>"]
 description = "AliPay Sdk for Rust"
@@ -19,3 +19,4 @@ base64 = "0.13.0"
 rsa = "0.6.1"
 uuid = { version = "1.0.0", features = [ "v4", "fast-rng", "macro-diagnostics" ] }
 serde_with = "1.14.0"
+log = "0.4"
