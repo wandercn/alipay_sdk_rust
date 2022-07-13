@@ -11,74 +11,74 @@ struct Response<T>(HashMap<String, T>);
 #[derive(Serialize, Deserialize)]
 pub struct TradePayResponse {
     #[serde(rename(deserialize = "alipay_trade_pay_response"))]
-    response: PayResponse,
-    sign: Option<String>,
-    alipay_cert_sn: Option<String>,
+    pub response: PayResponse,
+    pub sign: Option<String>,
+    pub alipay_cert_sn: Option<String>,
 }
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct PayResponse {
-    code: Option<String>,
-    msg: Option<String>,
-    sub_code: Option<String>,
-    sub_msg: Option<String>,
-    trade_no: Option<String>,
-    out_trade_no: Option<String>,
-    buyer_logon_id: Option<String>,
-    settle_amount: Option<String>,
-    pay_currency: Option<String>,
-    pay_amount: Option<String>,
-    settle_trans_rate: Option<String>,
-    trans_pay_rate: Option<String>,
-    total_amount: Option<String>,
-    trans_currency: Option<String>,
-    settle_currency: Option<String>,
-    receipt_amount: Option<String>,
-    buyer_pay_amount: Option<String>,
-    point_amount: Option<String>,
-    invoice_amount: Option<String>,
-    gmt_payment: Option<String>,
-    fund_bill_list: Vec<FundBill>,
-    card_balance: Option<String>,
-    store_name: Option<String>,
-    buyer_user_id: Option<String>,
-    discount_goods_detail: Option<String>,
-    voucher_detail_list: Vec<VoucherDetail>,
-    advance_amount: Option<String>,
-    auth_trade_pay_mode: Option<String>,
-    charge_amount: Option<String>,
-    charge_flags: Option<String>,
-    settlement_id: Option<String>,
-    business_params: Option<String>,
-    buyer_user_type: Option<String>,
-    mdiscount_amount: Option<String>,
-    discount_amount: Option<String>,
-    buyer_user_name: Option<String>,
-}
-
-#[skip_serializing_none]
-#[derive(Serialize, Deserialize)]
-struct FundBill {
-    fund_channel: Option<String>,
-    bank_code: Option<String>,
-    amount: Option<String>,
-    real_amount: Option<String>,
+pub struct PayResponse {
+    pub code: Option<String>,
+    pub msg: Option<String>,
+    pub sub_code: Option<String>,
+    pub sub_msg: Option<String>,
+    pub trade_no: Option<String>,
+    pub out_trade_no: Option<String>,
+    pub buyer_logon_id: Option<String>,
+    pub settle_amount: Option<String>,
+    pub pay_currency: Option<String>,
+    pub pay_amount: Option<String>,
+    pub settle_trans_rate: Option<String>,
+    pub trans_pay_rate: Option<String>,
+    pub total_amount: Option<String>,
+    pub trans_currency: Option<String>,
+    pub settle_currency: Option<String>,
+    pub receipt_amount: Option<String>,
+    pub buyer_pay_amount: Option<String>,
+    pub point_amount: Option<String>,
+    pub invoice_amount: Option<String>,
+    pub gmt_payment: Option<String>,
+    pub fund_bill_list: Vec<FundBill>,
+    pub card_balance: Option<String>,
+    pub store_name: Option<String>,
+    pub buyer_user_id: Option<String>,
+    pub discount_goods_detail: Option<String>,
+    pub voucher_detail_list: Vec<VoucherDetail>,
+    pub advance_amount: Option<String>,
+    pub auth_trade_pay_mode: Option<String>,
+    pub charge_amount: Option<String>,
+    pub charge_flags: Option<String>,
+    pub settlement_id: Option<String>,
+    pub business_params: Option<String>,
+    pub buyer_user_type: Option<String>,
+    pub mdiscount_amount: Option<String>,
+    pub discount_amount: Option<String>,
+    pub buyer_user_name: Option<String>,
 }
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct VoucherDetail {
-    id: Option<String>,
-    name: Option<String>,
-    r#type: Option<String>,
-    amount: Option<String>,
-    merchant_contribute: Option<String>,
-    other_contribute: Option<String>,
-    memo: Option<String>,
-    template_id: Option<String>,
-    purchase_buyer_contribute: Option<String>,
-    purchase_merchant_contribute: Option<String>,
-    purchase_ant_contribute: Option<String>,
+pub struct FundBill {
+    pub fund_channel: Option<String>,
+    pub bank_code: Option<String>,
+    pub amount: Option<String>,
+    pub real_amount: Option<String>,
+}
+
+#[skip_serializing_none]
+#[derive(Serialize, Deserialize)]
+pub struct VoucherDetail {
+    pub id: Option<String>,
+    pub name: Option<String>,
+    pub r#type: Option<String>,
+    pub amount: Option<String>,
+    pub merchant_contribute: Option<String>,
+    pub other_contribute: Option<String>,
+    pub memo: Option<String>,
+    pub template_id: Option<String>,
+    pub purchase_buyer_contribute: Option<String>,
+    pub purchase_merchant_contribute: Option<String>,
+    pub purchase_ant_contribute: Option<String>,
 }
 
 //===================================================
@@ -86,70 +86,70 @@ struct VoucherDetail {
 #[derive(Serialize, Deserialize)]
 pub struct TradeQueryResponse {
     #[serde(rename(deserialize = "alipay_trade_query_response"))]
-    response: QueryResponse,
-    sign: Option<String>,
-    alipay_cert_sn: Option<String>,
+    pub response: QueryResponse,
+    pub sign: Option<String>,
+    pub alipay_cert_sn: Option<String>,
 }
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct QueryResponse {
-    code: Option<String>,
-    msg: Option<String>,
-    sub_code: Option<String>,
-    sub_msg: Option<String>,
-    trade_no: Option<String>,
-    out_trade_no: Option<String>,
-    buyer_logon_id: Option<String>,
-    trade_status: Option<String>,
-    total_amount: Option<String>,
-    trans_currency: Option<String>,
-    settle_currency: Option<String>,
-    settle_amount: Option<String>,
-    pay_currency: Option<String>,
-    pay_amount: Option<String>,
-    settle_trans_rate: Option<String>,
-    trans_pay_rate: Option<String>,
-    buyer_pay_amount: Option<String>,
-    point_amount: Option<String>,
-    invoice_amount: Option<String>,
-    send_pay_date: Option<String>,
-    receipt_amount: Option<String>,
-    store_id: Option<String>,
-    terminal_id: Option<String>,
-    fund_bill_list: FundBill,
-    store_name: Option<String>,
-    buyer_user_id: Option<String>,
-    charge_amount: Option<String>,
-    charge_flags: Option<String>,
-    settlement_id: Option<String>,
-    trade_settle_info: Vec<TradeSettleInfo>,
-    auth_trade_pay_mode: Option<String>,
-    buyer_user_type: Option<String>,
-    mdiscount_amount: Option<String>,
-    discount_amount: Option<String>,
-    buyer_user_name: Option<String>,
-    subject: Option<String>,
-    body: Option<String>,
-    alipay_sub_merchant_id: Option<String>,
-    ext_infos: Option<String>,
+pub struct QueryResponse {
+    pub code: Option<String>,
+    pub msg: Option<String>,
+    pub sub_code: Option<String>,
+    pub sub_msg: Option<String>,
+    pub trade_no: Option<String>,
+    pub out_trade_no: Option<String>,
+    pub buyer_logon_id: Option<String>,
+    pub trade_status: Option<String>,
+    pub total_amount: Option<String>,
+    pub trans_currency: Option<String>,
+    pub settle_currency: Option<String>,
+    pub settle_amount: Option<String>,
+    pub pay_currency: Option<String>,
+    pub pay_amount: Option<String>,
+    pub settle_trans_rate: Option<String>,
+    pub trans_pay_rate: Option<String>,
+    pub buyer_pay_amount: Option<String>,
+    pub point_amount: Option<String>,
+    pub invoice_amount: Option<String>,
+    pub send_pay_date: Option<String>,
+    pub receipt_amount: Option<String>,
+    pub store_id: Option<String>,
+    pub terminal_id: Option<String>,
+    pub fund_bill_list: FundBill,
+    pub store_name: Option<String>,
+    pub buyer_user_id: Option<String>,
+    pub charge_amount: Option<String>,
+    pub charge_flags: Option<String>,
+    pub settlement_id: Option<String>,
+    pub trade_settle_info: Vec<TradeSettleInfo>,
+    pub auth_trade_pay_mode: Option<String>,
+    pub buyer_user_type: Option<String>,
+    pub mdiscount_amount: Option<String>,
+    pub discount_amount: Option<String>,
+    pub buyer_user_name: Option<String>,
+    pub subject: Option<String>,
+    pub body: Option<String>,
+    pub alipay_sub_merchant_id: Option<String>,
+    pub ext_infos: Option<String>,
 }
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct TradeSettleInfo {
-    trade_settle_detail_list: Vec<TradeSettleDetail>,
+pub struct TradeSettleInfo {
+    pub trade_settle_detail_list: Vec<TradeSettleDetail>,
 }
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct TradeSettleDetail {
-    operation_type: Option<String>,
-    operation_serial_no: Option<String>,
-    operation_dt: Option<String>,
-    trans_out: Option<String>,
-    trans_in: Option<String>,
-    amount: Option<String>,
+pub struct TradeSettleDetail {
+    pub operation_type: Option<String>,
+    pub operation_serial_no: Option<String>,
+    pub operation_dt: Option<String>,
+    pub trans_out: Option<String>,
+    pub trans_in: Option<String>,
+    pub amount: Option<String>,
 }
 
 //===================================================
@@ -157,21 +157,21 @@ struct TradeSettleDetail {
 #[derive(Serialize, Deserialize, Default, Debug, Clone)]
 pub struct TradeCreateResponse {
     #[serde(rename(deserialize = "alipay_trade_create_response"))]
-    response: CreateResponse,
-    sign: Option<String>,
-    alipay_cert_sn: Option<String>,
+    pub response: CreateResponse,
+    pub sign: Option<String>,
+    pub alipay_cert_sn: Option<String>,
 }
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize, Default, Debug, Clone)]
 
 pub struct CreateResponse {
-    code: Option<String>,
-    msg: Option<String>,
-    sub_code: Option<String>,
-    sub_msg: Option<String>,
-    trade_no: Option<String>,
-    out_trade_no: Option<String>,
+    pub code: Option<String>,
+    pub msg: Option<String>,
+    pub sub_code: Option<String>,
+    pub sub_msg: Option<String>,
+    pub trade_no: Option<String>,
+    pub out_trade_no: Option<String>,
 }
 
 //===================================================
@@ -179,20 +179,20 @@ pub struct CreateResponse {
 #[derive(Serialize, Deserialize)]
 pub struct TradeCloseResponse {
     #[serde(rename(deserialize = "alipay_trade_close_response"))]
-    response: CloseResponse,
-    sign: Option<String>,
-    alipay_cert_sn: Option<String>,
+    pub response: CloseResponse,
+    pub sign: Option<String>,
+    pub alipay_cert_sn: Option<String>,
 }
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct CloseResponse {
-    code: Option<String>,
-    msg: Option<String>,
-    sub_code: Option<String>,
-    sub_msg: Option<String>,
-    trade_no: Option<String>,
-    out_trade_no: Option<String>,
+pub struct CloseResponse {
+    pub code: Option<String>,
+    pub msg: Option<String>,
+    pub sub_code: Option<String>,
+    pub sub_msg: Option<String>,
+    pub trade_no: Option<String>,
+    pub out_trade_no: Option<String>,
 }
 
 //===================================================
@@ -200,24 +200,24 @@ struct CloseResponse {
 #[derive(Serialize, Deserialize)]
 pub struct TradeCancelResponse {
     #[serde(rename(deserialize = "alipay_trade_cancel_response"))]
-    response: CancelResponse,
-    alipay_cert_sn: Option<String>,
-    sign: Option<String>,
+    pub response: CancelResponse,
+    pub alipay_cert_sn: Option<String>,
+    pub sign: Option<String>,
 }
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct CancelResponse {
-    code: Option<String>,
-    msg: Option<String>,
-    sub_code: Option<String>,
-    sub_msg: Option<String>,
-    trade_no: Option<String>,
-    out_trade_no: Option<String>,
-    retry_flag: Option<String>,
-    action: Option<String>,
-    gmt_refund_pay: Option<String>,
-    refund_settlement_id: Option<String>,
+pub struct CancelResponse {
+    pub code: Option<String>,
+    pub msg: Option<String>,
+    pub sub_code: Option<String>,
+    pub sub_msg: Option<String>,
+    pub trade_no: Option<String>,
+    pub out_trade_no: Option<String>,
+    pub retry_flag: Option<String>,
+    pub action: Option<String>,
+    pub gmt_refund_pay: Option<String>,
+    pub refund_settlement_id: Option<String>,
 }
 
 //===================================================
@@ -276,50 +276,50 @@ struct UserInfoShare {
 #[derive(Serialize, Deserialize)]
 pub struct TradeRefundResponse {
     #[serde(rename(deserialize = "alipay_trade_refund_response"))]
-    response: RefundResponse,
-    alipay_cert_sn: Option<String>,
-    sign: Option<String>,
+    pub response: RefundResponse,
+    pub alipay_cert_sn: Option<String>,
+    pub sign: Option<String>,
 }
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct RefundResponse {
-    code: Option<String>,
-    msg: Option<String>,
-    sub_code: Option<String>,
-    sub_msg: Option<String>,
-    trade_no: Option<String>,
-    out_trade_no: Option<String>,
-    buyer_logon_id: Option<String>,
-    fund_change: Option<String>,
-    refund_fee: Option<String>,
-    refund_currency: Option<String>,
-    gmt_refund_pay: Option<String>,
-    refund_detail_item_list: Vec<TradeFundBill>,
-    store_name: Option<String>,
-    buyer_user_id: Option<String>,
-    refund_preset_paytool_list: Vec<RefundPresetPaytool>,
-    refund_settlement_id: Option<String>,
-    present_refund_buyer_amount: Option<String>,
-    present_refund_discount_amount: Option<String>,
-    present_refund_mdiscount_amount: Option<String>,
+pub struct RefundResponse {
+    pub code: Option<String>,
+    pub msg: Option<String>,
+    pub sub_code: Option<String>,
+    pub sub_msg: Option<String>,
+    pub trade_no: Option<String>,
+    pub out_trade_no: Option<String>,
+    pub buyer_logon_id: Option<String>,
+    pub fund_change: Option<String>,
+    pub refund_fee: Option<String>,
+    pub refund_currency: Option<String>,
+    pub gmt_refund_pay: Option<String>,
+    pub refund_detail_item_list: Vec<TradeFundBill>,
+    pub store_name: Option<String>,
+    pub buyer_user_id: Option<String>,
+    pub refund_preset_paytool_list: Vec<RefundPresetPaytool>,
+    pub refund_settlement_id: Option<String>,
+    pub present_refund_buyer_amount: Option<String>,
+    pub present_refund_discount_amount: Option<String>,
+    pub present_refund_mdiscount_amount: Option<String>,
 }
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct RefundPresetPaytool {
-    amount: Vec<String>,
-    assert_type_code: Option<String>,
+pub struct RefundPresetPaytool {
+    pub amount: Vec<String>,
+    pub assert_type_code: Option<String>,
 }
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct TradeFundBill {
-    fund_channel: Option<String>,
-    bank_code: Option<String>,
-    amount: Option<String>,
-    real_amount: Option<String>,
-    fund_type: Option<String>,
+pub struct TradeFundBill {
+    pub fund_channel: Option<String>,
+    pub bank_code: Option<String>,
+    pub amount: Option<String>,
+    pub real_amount: Option<String>,
+    pub fund_type: Option<String>,
 }
 
 //===================================================
@@ -327,44 +327,44 @@ struct TradeFundBill {
 #[derive(Serialize, Deserialize)]
 pub struct TradeFastpayRefundQueryResponse {
     #[serde(rename(deserialize = "alipay_trade_fastpay_refund_query_response"))]
-    response: RefundQueryResponse,
-    alipay_cert_sn: Option<String>,
-    sign: Option<String>,
+    pub response: RefundQueryResponse,
+    pub alipay_cert_sn: Option<String>,
+    pub sign: Option<String>,
 }
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct RefundQueryResponse {
-    code: Option<String>,
-    msg: Option<String>,
-    sub_code: Option<String>,
-    sub_msg: Option<String>,
-    trade_no: Option<String>,
-    out_trade_no: Option<String>,
-    out_request_no: Option<String>,
-    refund_reason: Option<String>,
-    total_amount: Option<String>,
-    refund_amount: Option<String>,
-    refund_royaltys: Vec<RefundRoyalty>,
-    gmt_refund_pay: Option<String>,
-    refund_detail_item_list: Vec<TradeFundBill>,
-    send_back_fee: Option<String>,
-    refund_settlement_id: Option<String>,
-    present_refund_buyer_amount: Option<String>,
-    present_refund_discount_amount: Option<String>,
-    present_refund_mdiscount_amount: Option<String>,
+pub struct RefundQueryResponse {
+    pub code: Option<String>,
+    pub msg: Option<String>,
+    pub sub_code: Option<String>,
+    pub sub_msg: Option<String>,
+    pub trade_no: Option<String>,
+    pub out_trade_no: Option<String>,
+    pub out_request_no: Option<String>,
+    pub refund_reason: Option<String>,
+    pub total_amount: Option<String>,
+    pub refund_amount: Option<String>,
+    pub refund_royaltys: Vec<RefundRoyalty>,
+    pub gmt_refund_pay: Option<String>,
+    pub refund_detail_item_list: Vec<TradeFundBill>,
+    pub send_back_fee: Option<String>,
+    pub refund_settlement_id: Option<String>,
+    pub present_refund_buyer_amount: Option<String>,
+    pub present_refund_discount_amount: Option<String>,
+    pub present_refund_mdiscount_amount: Option<String>,
 }
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct RefundRoyalty {
-    refund_amount: Option<String>,
-    royalty_type: Option<String>,
-    result_code: Option<String>,
-    trans_out: Option<String>,
-    trans_out_email: Option<String>,
-    trans_in: Option<String>,
-    trans_in_email: Option<String>,
+pub struct RefundRoyalty {
+    pub refund_amount: Option<String>,
+    pub royalty_type: Option<String>,
+    pub result_code: Option<String>,
+    pub trans_out: Option<String>,
+    pub trans_out_email: Option<String>,
+    pub trans_in: Option<String>,
+    pub trans_in_email: Option<String>,
 }
 //===================================================
 #[skip_serializing_none]
@@ -391,20 +391,20 @@ struct OrderSettleResponse {
 #[derive(Serialize, Deserialize)]
 pub struct TradePrecreateResponse {
     #[serde(rename(deserialize = "alipay_trade_precreate_response"))]
-    response: PrecreateResponse,
-    alipay_cert_sn: Option<String>,
-    sign: Option<String>,
+    pub response: PrecreateResponse,
+    pub alipay_cert_sn: Option<String>,
+    pub sign: Option<String>,
 }
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct PrecreateResponse {
-    code: Option<String>,
-    msg: Option<String>,
-    sub_code: Option<String>,
-    sub_msg: Option<String>,
-    out_trade_no: Option<String>,
-    qrcode: Option<String>,
+pub struct PrecreateResponse {
+    pub code: Option<String>,
+    pub msg: Option<String>,
+    pub sub_code: Option<String>,
+    pub sub_msg: Option<String>,
+    pub out_trade_no: Option<String>,
+    pub qrcode: Option<String>,
 }
 
 //===================================================
@@ -412,22 +412,22 @@ struct PrecreateResponse {
 #[derive(Serialize, Deserialize)]
 pub struct TradePageRefundResponse {
     #[serde(rename(deserialize = "alipay_trade_page_refund_response"))]
-    response: PageRefundResponse,
-    alipay_cert_sn: Option<String>,
-    sign: Option<String>,
+    pub response: PageRefundResponse,
+    pub alipay_cert_sn: Option<String>,
+    pub sign: Option<String>,
 }
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct PageRefundResponse {
-    code: Option<String>,
-    msg: Option<String>,
-    sub_code: Option<String>,
-    sub_msg: Option<String>,
-    trade_no: Option<String>,
-    out_trade_no: Option<String>,
-    out_request_no: Option<String>,
-    refund_amount: Option<String>,
+pub struct PageRefundResponse {
+    pub code: Option<String>,
+    pub msg: Option<String>,
+    pub sub_code: Option<String>,
+    pub sub_msg: Option<String>,
+    pub trade_no: Option<String>,
+    pub out_trade_no: Option<String>,
+    pub out_request_no: Option<String>,
+    pub refund_amount: Option<String>,
 }
 
 //===================================================
