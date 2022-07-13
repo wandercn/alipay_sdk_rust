@@ -11,10 +11,10 @@ use gostd::net::http;
 use gostd::net::url;
 
 use crate::biz::{self, BizContenter};
+use crate::request;
 use crate::request::{Request, Requester};
 use crate::response::{self, TradeCreateResponse};
 use crate::util::{build_form, json_get};
-use crate::{api, request};
 pub trait Payer {
     fn get_api_url(&self) -> String;
     fn get_private_key(&self) -> String;
