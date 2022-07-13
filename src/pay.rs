@@ -5,6 +5,7 @@ use std::io::Result;
 use std::io::{Error, ErrorKind};
 
 use std::borrow::{Borrow, BorrowMut};
+use std::sync::Arc;
 
 use crate::sign::{builder, Signer};
 use gostd::builtin::byte;
@@ -247,6 +248,17 @@ impl Payer for PayClient {
     fn trade_create(&self, biz_content: &TradeCreateBiz) -> Result<TradeCreateResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeCreateResponse = serde_json::from_slice(&body)?;
+        if res.response.code != Some("10000".to_string()) {
+            return Err(Error::new(
+                ErrorKind::Other,
+                format!(
+                    "trade_create failed: {} code:{}",
+                    res.response.sub_msg.unwrap().as_str(),
+                    res.response.sub_code.unwrap().as_str()
+                ),
+            ));
+        }
+
         Ok(res)
     }
 
@@ -256,6 +268,16 @@ impl Payer for PayClient {
     fn trade_pay(&self, biz_content: &TradePayBiz) -> Result<TradePayResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradePayResponse = serde_json::from_slice(&body)?;
+        if res.response.code != Some("10000".to_string()) {
+            return Err(Error::new(
+                ErrorKind::Other,
+                format!(
+                    "trade_pay failed: {} code:{}",
+                    res.response.sub_msg.unwrap().as_str(),
+                    res.response.sub_code.unwrap().as_str()
+                ),
+            ));
+        }
         Ok(res)
     }
 
@@ -265,6 +287,16 @@ impl Payer for PayClient {
     fn trade_precreate(&self, biz_content: &TradePrecreateBiz) -> Result<TradePrecreateResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradePrecreateResponse = serde_json::from_slice(&body)?;
+        if res.response.code != Some("10000".to_string()) {
+            return Err(Error::new(
+                ErrorKind::Other,
+                format!(
+                    "trade_precreate failed: {} code:{}",
+                    res.response.sub_msg.unwrap().as_str(),
+                    res.response.sub_code.unwrap().as_str()
+                ),
+            ));
+        }
         Ok(res)
     }
 
@@ -301,6 +333,16 @@ impl Payer for PayClient {
     fn trede_query(&self, biz_content: &TradeQueryBiz) -> Result<TradeQueryResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeQueryResponse = serde_json::from_slice(&body)?;
+        if res.response.code != Some("10000".to_string()) {
+            return Err(Error::new(
+                ErrorKind::Other,
+                format!(
+                    "trede_query failed: {} code:{}",
+                    res.response.sub_msg.unwrap().as_str(),
+                    res.response.sub_code.unwrap().as_str()
+                ),
+            ));
+        }
         Ok(res)
     }
 
@@ -310,6 +352,16 @@ impl Payer for PayClient {
     fn trade_cancel(&self, biz_content: &TradeCancelBiz) -> Result<TradeCancelResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeCancelResponse = serde_json::from_slice(&body)?;
+        if res.response.code != Some("10000".to_string()) {
+            return Err(Error::new(
+                ErrorKind::Other,
+                format!(
+                    "trade_cancel failed: {} code:{}",
+                    res.response.sub_msg.unwrap().as_str(),
+                    res.response.sub_code.unwrap().as_str()
+                ),
+            ));
+        }
         Ok(res)
     }
 
@@ -319,6 +371,16 @@ impl Payer for PayClient {
     fn trade_refund(&self, biz_content: &TradeRefundBiz) -> Result<TradeRefundResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeRefundResponse = serde_json::from_slice(&body)?;
+        if res.response.code != Some("10000".to_string()) {
+            return Err(Error::new(
+                ErrorKind::Other,
+                format!(
+                    "trade_refund failed: {} code:{}",
+                    res.response.sub_msg.unwrap().as_str(),
+                    res.response.sub_code.unwrap().as_str()
+                ),
+            ));
+        }
         Ok(res)
     }
 
@@ -331,6 +393,16 @@ impl Payer for PayClient {
     ) -> Result<TradePageRefundResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradePageRefundResponse = serde_json::from_slice(&body)?;
+        if res.response.code != Some("10000".to_string()) {
+            return Err(Error::new(
+                ErrorKind::Other,
+                format!(
+                    "trade_page_refund failed: {} code:{}",
+                    res.response.sub_msg.unwrap().as_str(),
+                    res.response.sub_code.unwrap().as_str()
+                ),
+            ));
+        }
         Ok(res)
     }
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.fastpay.refund.query>
@@ -342,6 +414,16 @@ impl Payer for PayClient {
     ) -> Result<TradeFastpayRefundQueryResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeFastpayRefundQueryResponse = serde_json::from_slice(&body)?;
+        if res.response.code != Some("10000".to_string()) {
+            return Err(Error::new(
+                ErrorKind::Other,
+                format!(
+                    "trade_fastpay_refund_query failed: {} code:{}",
+                    res.response.sub_msg.unwrap().as_str(),
+                    res.response.sub_code.unwrap().as_str()
+                ),
+            ));
+        }
         Ok(res)
     }
 
@@ -351,6 +433,16 @@ impl Payer for PayClient {
     fn trade_close(&self, biz_content: &TradeCloseBiz) -> Result<TradeCloseResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeCloseResponse = serde_json::from_slice(&body)?;
+        if res.response.code != Some("10000".to_string()) {
+            return Err(Error::new(
+                ErrorKind::Other,
+                format!(
+                    "trade_close failed: {} code:{}",
+                    res.response.sub_msg.unwrap().as_str(),
+                    res.response.sub_code.unwrap().as_str()
+                ),
+            ));
+        }
         Ok(res)
     }
 }
@@ -542,9 +634,6 @@ impl<'a> PayClientBuilder<'a> {
         if let Some(return_url) = self.return_url {
             p.return_url = return_url.to_owned();
         }
-        // else {
-        //     return Err(Error::new(ErrorKind::Other, "return_url is required"));
-        // }
 
         Ok(p)
     }
