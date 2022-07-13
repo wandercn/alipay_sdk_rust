@@ -25,22 +25,6 @@ use crate::response::{
 };
 use crate::util::{build_form, json_get};
 pub trait Payer {
-    fn get_api_url(&self) -> String;
-    fn get_private_key(&self) -> String;
-    fn get_public_key(&self) -> String;
-    fn get_app_cert_sn(&self) -> String;
-    fn get_alipay_root_cert_sn(&self) -> String;
-    fn get_alipay_public_key(&self) -> String;
-    fn get_app_id(&self) -> String;
-    fn get_format(&self) -> String;
-    fn get_charset(&self) -> String;
-    fn get_sign_type(&self) -> String;
-    fn get_version(&self) -> String;
-    fn get_return_url(&self) -> String;
-    fn set_sign_type(&mut self, sign_type: &str);
-    fn set_charset(&mut self, charset: &str);
-    fn execute(&self, request: &mut impl Requester) -> Result<Vec<byte>>;
-    fn do_alipay(&self, biz_content: &impl BizContenter) -> Result<Vec<byte>>;
     fn trade_create(&self, biz_content: &TradeCreateBiz) -> Result<TradeCreateResponse>;
     fn trade_pay(&self, biz_content: &TradePayBiz) -> Result<TradePayResponse>;
     fn trade_precreate(&self, biz_content: &TradePrecreateBiz) -> Result<TradePrecreateResponse>;
@@ -108,143 +92,9 @@ pub struct PayClient {
 }
 
 impl Payer for PayClient {
-    fn get_api_url(&self) -> String {
-        self.api_url.to_owned()
-    }
-
-    fn get_private_key(&self) -> String {
-        self.private_key.to_owned()
-    }
-
-    fn get_public_key(&self) -> String {
-        self.public_key.to_owned()
-    }
-
-    fn get_app_cert_sn(&self) -> String {
-        self.app_cert_sn.to_owned()
-    }
-
-    fn get_alipay_root_cert_sn(&self) -> String {
-        self.alipay_root_cert_sn.to_owned()
-    }
-
-    fn get_alipay_public_key(&self) -> String {
-        self.alipay_public_key.to_owned()
-    }
-
-    fn get_app_id(&self) -> String {
-        self.app_id.to_owned()
-    }
-
-    fn get_format(&self) -> String {
-        self.format.to_owned()
-    }
-
-    fn get_charset(&self) -> String {
-        self.charset.to_owned()
-    }
-
-    fn get_sign_type(&self) -> String {
-        self.sign_type.to_owned()
-    }
-
-    fn get_version(&self) -> String {
-        self.version.to_owned()
-    }
-
-    fn get_return_url(&self) -> String {
-        self.return_url.to_owned()
-    }
-
-    fn set_sign_type(&mut self, sign_type: &str) {
-        self.sign_type = sign_type.to_owned()
-    }
-
-    fn set_charset(&mut self, charset: &str) {
-        self.charset = charset.to_owned()
-    }
-
-    fn execute(&self, req: &mut impl Requester) -> Result<Vec<byte>> {
-        let method = req.method();
-        let payload = req.encode_payload()?;
-        let mut request = http::Request::default();
-        let mut client = http::Client::New();
-        if method == "alipay.trade.precreate" {
-            request = http::Request::New(
-                http::Method::Get,
-                &format!("{}?{}", self.api_url, payload),
-                None,
-            )?;
-        } else {
-            request = http::Request::New(
-                http::Method::Post,
-                &self.api_url,
-                Some(payload.as_bytes().to_vec()),
-            )?;
-        }
-        //  设置客户端请求的编号格式utf-8, 解决中文有乱码问题。
-        request.Header.Set(
-            "Content-Type",
-            "application/x-www-form-urlencoded;charset=utf-8",
-        );
-        //  设置客户端接受返回数据的编号格式utf-8, 解决中文有乱码问题。
-        request
-            .Header
-            .Set("Accept", "application/json;charset=utf-8");
-
-        let res = client.Do(request.borrow_mut())?;
-        match res.Body {
-            Some(body) => Ok(body),
-            None => Err(Error::new(ErrorKind::Other, "body is NONE")),
-        }
-    }
-    /// 该方法对返回结果自带同步验签
-    fn do_alipay(&self, biz_content: &impl BizContenter) -> Result<Vec<byte>> {
-        // 同步验签
-        let sync_verigy_sign = |response: &[byte]| -> Result<bool> {
-            if let Ok(result) = std::str::from_utf8(response) {
-                let get_raw_source = || -> String {
-                    let key = biz::get_response_key(biz_content);
-                    json_get(result, &key)
-                };
-
-                let get_signture = || -> String { json_get(result, "sign") };
-
-                let mut singer = builder()
-                    .set_sign_type(self.get_sign_type().as_str())
-                    .build();
-
-                singer.set_public_key(self.get_alipay_public_key().as_str())?;
-                let passed = singer.verify(&get_raw_source(), &get_signture())?;
-                if !passed {
-                    return Ok(false);
-                }
-                Ok(true)
-            } else {
-                Err(Error::new(ErrorKind::Other, "from_utf8 response failed!"))
-            }
-        };
-
-        match biz_content.method().as_str() {
-            "alipay.trade.wap.pay" | "alipay.trade.page.pay" => {
-                self.create_clien_page_form(biz_content)
-            }
-            "alipay.trade.app.pay" => self.create_clien_sdkt_request(biz_content),
-            _ => {
-                let mut request = Request::new_with_config(self.borrow());
-                request
-                    .set_biz_content(biz_content)
-                    .set_method(biz_content.method().as_str());
-                let res = self.execute(&mut request)?;
-                let is_pass = sync_verigy_sign(&res)?;
-                if !is_pass {
-                    return Err(Error::new(ErrorKind::Other, "syncVerifySign no passed!"));
-                }
-                Ok(res)
-            }
-        }
-    }
-
+    /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.create>
+    ///
+    /// alipay.trade.create(统一收单交易创建接口)
     fn trade_create(&self, biz_content: &TradeCreateBiz) -> Result<TradeCreateResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeCreateResponse = serde_json::from_slice(&body)?;
@@ -477,6 +327,143 @@ impl PayClient {
         PayClientBuilder::default()
     }
 
+    pub fn api_url(&self) -> String {
+        self.api_url.to_owned()
+    }
+
+    pub fn private_key(&self) -> String {
+        self.private_key.to_owned()
+    }
+
+    pub fn public_key(&self) -> String {
+        self.public_key.to_owned()
+    }
+
+    pub fn app_cert_sn(&self) -> String {
+        self.app_cert_sn.to_owned()
+    }
+
+    pub fn alipay_root_cert_sn(&self) -> String {
+        self.alipay_root_cert_sn.to_owned()
+    }
+
+    pub fn alipay_public_key(&self) -> String {
+        self.alipay_public_key.to_owned()
+    }
+
+    pub fn app_id(&self) -> String {
+        self.app_id.to_owned()
+    }
+
+    pub fn format(&self) -> String {
+        self.format.to_owned()
+    }
+
+    pub fn charset(&self) -> String {
+        self.charset.to_owned()
+    }
+
+    pub fn sign_type(&self) -> String {
+        self.sign_type.to_owned()
+    }
+
+    pub fn version(&self) -> String {
+        self.version.to_owned()
+    }
+
+    pub fn return_url(&self) -> String {
+        self.return_url.to_owned()
+    }
+
+    pub fn set_sign_type(&mut self, sign_type: &str) {
+        self.sign_type = sign_type.to_owned()
+    }
+
+    pub fn set_charset(&mut self, charset: &str) {
+        self.charset = charset.to_owned()
+    }
+
+    pub fn execute(&self, req: &mut impl Requester) -> Result<Vec<byte>> {
+        let method = req.method();
+        let payload = req.encode_payload()?;
+        let mut request = http::Request::default();
+        let mut client = http::Client::New();
+        if method == "alipay.trade.precreate" {
+            request = http::Request::New(
+                http::Method::Get,
+                &format!("{}?{}", self.api_url, payload),
+                None,
+            )?;
+        } else {
+            request = http::Request::New(
+                http::Method::Post,
+                &self.api_url,
+                Some(payload.as_bytes().to_vec()),
+            )?;
+        }
+        //  设置客户端请求的编号格式utf-8, 解决中文有乱码问题。
+        request.Header.Set(
+            "Content-Type",
+            "application/x-www-form-urlencoded;charset=utf-8",
+        );
+        //  设置客户端接受返回数据的编号格式utf-8, 解决中文有乱码问题。
+        request
+            .Header
+            .Set("Accept", "application/json;charset=utf-8");
+
+        let res = client.Do(request.borrow_mut())?;
+        match res.Body {
+            Some(body) => Ok(body),
+            None => Err(Error::new(ErrorKind::Other, "body is NONE")),
+        }
+    }
+    /// 该方法对返回结果自带同步验签
+    pub fn do_alipay(&self, biz_content: &impl BizContenter) -> Result<Vec<byte>> {
+        // 同步验签
+        let sync_verigy_sign = |response: &[byte]| -> Result<bool> {
+            if let Ok(result) = std::str::from_utf8(response) {
+                let get_raw_source = || -> String {
+                    let key = biz::get_response_key(biz_content);
+                    json_get(result, &key)
+                };
+
+                let get_signture = || -> String { json_get(result, "sign") };
+
+                let mut singer = builder()
+                    .set_sign_type(self.sign_type().as_str())
+                    .build();
+
+                singer.set_public_key(self.alipay_public_key().as_str())?;
+                let passed = singer.verify(&get_raw_source(), &get_signture())?;
+                if !passed {
+                    return Ok(false);
+                }
+                Ok(true)
+            } else {
+                Err(Error::new(ErrorKind::Other, "from_utf8 response failed!"))
+            }
+        };
+
+        match biz_content.method().as_str() {
+            "alipay.trade.wap.pay" | "alipay.trade.page.pay" => {
+                self.create_clien_page_form(biz_content)
+            }
+            "alipay.trade.app.pay" => self.create_clien_sdkt_request(biz_content),
+            _ => {
+                let mut request = Request::new_with_config(self.borrow());
+                request
+                    .set_biz_content(biz_content)
+                    .set_method(biz_content.method().as_str());
+                let res = self.execute(&mut request)?;
+                let is_pass = sync_verigy_sign(&res)?;
+                if !is_pass {
+                    return Err(Error::new(ErrorKind::Other, "syncVerifySign no passed!"));
+                }
+                Ok(res)
+            }
+        }
+    }
+
     pub fn create_clien_page_form(&self, biz: &impl BizContenter) -> Result<Vec<byte>> {
         let encode_query = Request::new_with_config(self.borrow())
             .set_biz_content(biz)
@@ -488,7 +475,7 @@ impl PayClient {
         for (k, v) in values {
             parameters.insert(k, v[0].to_string());
         }
-        let form = build_form(&self.get_api_url(), &mut parameters)
+        let form = build_form(&self.api_url(), &mut parameters)
             .as_bytes()
             .to_vec();
         Ok(form)
