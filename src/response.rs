@@ -8,7 +8,8 @@ struct Response<T>(HashMap<String, T>);
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct TradePayResponse {
+pub struct TradePayResponse {
+    #[serde(rename(deserialize = "alipay_trade_pay_response"))]
     response: PayResponse,
     sign: Option<String>,
     alipay_cert_sn: Option<String>,
@@ -82,7 +83,8 @@ struct VoucherDetail {
 //===================================================
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct TradeQueryResponse {
+pub struct TradeQueryResponse {
+    #[serde(rename(deserialize = "alipay_trade_query_response"))]
     response: QueryResponse,
     sign: Option<String>,
     alipay_cert_sn: Option<String>,
@@ -174,7 +176,7 @@ pub struct CreateResponse {
 //===================================================
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct TradeCloseResponse {
+pub struct TradeCloseResponse {
     #[serde(rename(deserialize = "alipay_trade_close_response"))]
     response: CloseResponse,
     sign: Option<String>,
@@ -195,7 +197,7 @@ struct CloseResponse {
 //===================================================
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct TradeCancelResponse {
+pub struct TradeCancelResponse {
     #[serde(rename(deserialize = "alipay_trade_cancel_response"))]
     response: CancelResponse,
     alipay_cert_sn: Option<String>,
@@ -220,7 +222,7 @@ struct CancelResponse {
 //===================================================
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct SystemOauthTokenResponse {
+pub struct SystemOauthTokenResponse {
     #[serde(rename(deserialize = "alipay_system_oauth_token_response"))]
     response: OauthTokenInfo,
     alipay_cert_sn: Option<String>,
@@ -242,7 +244,7 @@ struct OauthTokenInfo {
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct UserInfoShareResponse {
+pub struct UserInfoShareResponse {
     #[serde(rename(deserialize = "alipay_user_info_share_response"))]
     response: UserInfoShare,
     alipay_cert_sn: Option<String>,
@@ -271,7 +273,7 @@ struct UserInfoShare {
 //===================================================
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct TradeRefundResponse {
+pub struct TradeRefundResponse {
     #[serde(rename(deserialize = "alipay_trade_refund_response"))]
     response: RefundResponse,
     alipay_cert_sn: Option<String>,
@@ -322,7 +324,7 @@ struct TradeFundBill {
 //===================================================
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct TradeFastpayRefundQueryResponse {
+pub struct TradeFastpayRefundQueryResponse {
     #[serde(rename(deserialize = "alipay_trade_fastpay_refund_query_response"))]
     response: RefundQueryResponse,
     alipay_cert_sn: Option<String>,
@@ -366,7 +368,7 @@ struct RefundRoyalty {
 //===================================================
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct TradeOrderSettleResponse {
+pub struct TradeOrderSettleResponse {
     #[serde(rename(deserialize = "alipay_trade_order_settle_response"))]
     response: OrderSettleResponse,
     alipay_cert_sn: Option<String>,
@@ -386,7 +388,7 @@ struct OrderSettleResponse {
 //===================================================
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct TradePrecreateResponse {
+pub struct TradePrecreateResponse {
     #[serde(rename(deserialize = "alipay_trade_precreate_response"))]
     response: PrecreateResponse,
     alipay_cert_sn: Option<String>,
@@ -407,7 +409,7 @@ struct PrecreateResponse {
 //===================================================
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct TradePageRefundResponse {
+pub struct TradePageRefundResponse {
     #[serde(rename(deserialize = "alipay_trade_page_refund_response"))]
     response: PageRefundResponse,
     alipay_cert_sn: Option<String>,
@@ -430,7 +432,7 @@ struct PageRefundResponse {
 //===================================================
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct FundTransToaccountTransferResponse {
+pub struct FundTransToaccountTransferResponse {
     #[serde(rename(deserialize = "alipay_fund_trans_toaccount_transfer_response"))]
     response: TransToaccountTransferResponse,
     alipay_cert_sn: Option<String>,
@@ -452,7 +454,7 @@ struct TransToaccountTransferResponse {
 //===================================================
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct ZhimaCreditScoreGetResponse {
+pub struct ZhimaCreditScoreGetResponse {
     #[serde(rename(deserialize = "zhima_credit_score_get_response"))]
     response: ScoreGetResponse,
     alipay_cert_sn: Option<String>,
@@ -473,7 +475,7 @@ struct ScoreGetResponse {
 //===================================================
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct OpenAuthTokenAppResponse {
+pub struct OpenAuthTokenAppResponse {
     #[serde(rename(deserialize = "alipay_open_auth_token_app_response"))]
     response: AuthTokenAppResponse,
     alipay_cert_sn: Option<String>,
@@ -509,7 +511,7 @@ struct Token {
 //===================================================
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct UserCertifyOpenInitResponse {
+pub struct UserCertifyOpenInitResponse {
     #[serde(rename(deserialize = "alipay_user_certify_open_initialize_response"))]
     response: AlipayUserCertifyOpenInitResponse,
     alipay_cert_sn: Option<String>,
@@ -529,7 +531,7 @@ struct AlipayUserCertifyOpenInitResponse {
 //===================================================
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct UserCertifyOpenCertifyResponse {
+pub struct UserCertifyOpenCertifyResponse {
     #[serde(rename(deserialize = "alipay_user_certify_open_certify_response"))]
     response: AlipayUserCertifyOpenCertifyResponse,
     alipay_cert_sn: Option<String>,
@@ -548,7 +550,7 @@ struct AlipayUserCertifyOpenCertifyResponse {
 //===================================================
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct UserCertifyOpenQueryResponse {
+pub struct UserCertifyOpenQueryResponse {
     #[serde(rename(deserialize = "alipay_user_certify_open_query_response"))]
     response: AlipayUserCertifyOpenQueryResponse,
     alipay_cert_sn: Option<String>,
