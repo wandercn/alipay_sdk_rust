@@ -69,6 +69,10 @@ pub trait Payer {
 /// 避免每次输入大量参数，建议像如下例子，单独写一个函数需要使用的时候调用函数就可以。
 ///
 /// ```
+///use std::io::Result;
+/// use alipay_sdk_rust::biz::{self, BizContenter};
+/// use alipay_sdk_rust::pay::{PayClient, Payer};
+/// use alipay_sdk_rust::response::TradeCreateResponse;
 /// fn new_pay_client() -> Result<impl Payer> {
 ///     let client = PayClient::builder()
 /// .api_url("https://openapi.alipaydev.com/gateway.do")

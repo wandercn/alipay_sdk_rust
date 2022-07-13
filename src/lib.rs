@@ -7,14 +7,16 @@
 //! <https://opendocs.alipay.com/apis/api_1/alipay.trade.create>
 //!
 //! ## alipay.trade.create(统一收单交易创建接口)
+//!
 //! ```rust
 //! use std::io::Result;
 //! use alipay_sdk_rust::biz::{self, BizContenter};
 //! use alipay_sdk_rust::pay::{PayClient, Payer};
-//! use alipay_sdk_rust::response::TradeCreateResponse;//!
+//! use alipay_sdk_rust::response::TradeCreateResponse;
 //! fn main() -> Result<()> {
 //!     let mut biz_content = biz::TradeCreateBiz::new();
-//!     biz_content.set_subject("huawei Mate50");//!     biz_content.set_out_trade_no("1620630871769533112");
+//!     biz_content.set_subject("huawei Mate50");
+//!     biz_content.set_out_trade_no("1620630871769533112");
 //!     biz_content.set_total_amount("5");
 //!     biz_content.set("seller_id", "2088621955702975");
 //!     biz_content.set_buyer_id("2088102175953034");
