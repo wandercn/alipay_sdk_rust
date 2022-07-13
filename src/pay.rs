@@ -12,6 +12,7 @@ use gostd::net::url;
 
 use crate::biz::{self, BizContenter};
 use crate::request::{Request, Requester};
+use crate::response::{self, TradeCreateResponse};
 use crate::util::{build_form, json_get};
 use crate::{api, request};
 pub trait Payer {
@@ -31,6 +32,7 @@ pub trait Payer {
     fn set_charset(&mut self, charset: &str);
     fn execute(&self, request: &mut impl Requester) -> Result<Vec<byte>>;
     fn do_alipay(&self, biz: &impl BizContenter) -> Result<Vec<byte>>;
+    fn trade_create(&self, biz: biz::TradeCreateBiz) -> Result<TradeCreateResponse>;
 }
 
 #[derive(Debug, Default)]
@@ -125,12 +127,17 @@ impl Payer for PayClient {
                 Some(payload.as_bytes().to_vec()),
             )?;
         }
+        //  设置客户端请求的编号格式utf-8, 解决中文有乱码问题。
+        request.Header.Set(
+            "Content-Type",
+            "application/x-www-form-urlencoded;charset=utf-8",
+        );
+        //  设置客户端接受返回数据的编号格式utf-8, 解决中文有乱码问题。
         request
             .Header
-            .Set("Content-Type", "application/x-www-form-urlencoded");
+            .Set("Accept", "application/json;charset=utf-8");
 
         let res = client.Do(request.borrow_mut())?;
-
         match res.Body {
             Some(body) => Ok(body),
             None => Err(Error::new(ErrorKind::Other, "body is NONE")),
@@ -182,9 +189,16 @@ impl Payer for PayClient {
             }
         }
     }
+
+    fn trade_create(&self, biz: biz::TradeCreateBiz) -> Result<TradeCreateResponse> {
+        let mut res = TradeCreateResponse::default();
+        let body = self.do_alipay(&biz)?;
+        res = serde_json::from_slice(&body)?;
+        Ok(res)
+    }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct PayClientBuilder<'a> {
     api_url: Option<&'a str>, // `json:"-"`                    // 接口网关地址
     private_key: Option<&'a str>, // `json:"-"`                    // rsa私钥单行文本字符串
@@ -334,6 +348,15 @@ impl<'a> PayClientBuilder<'a> {
             return Err(Error::new(ErrorKind::Other, "app_id is required"));
         }
 
+        if let Some(alipay_public_key) = self.alipay_public_key {
+            p.alipay_public_key = alipay_public_key.to_owned();
+        } else {
+            return Err(Error::new(
+                ErrorKind::Other,
+                "alipay_public_key is required",
+            ));
+        }
+
         if let Some(format) = self.format {
             p.format = format.to_owned();
         } else {
@@ -360,9 +383,10 @@ impl<'a> PayClientBuilder<'a> {
 
         if let Some(return_url) = self.return_url {
             p.return_url = return_url.to_owned();
-        } else {
-            return Err(Error::new(ErrorKind::Other, "return_url is required"));
         }
+        // else {
+        //     return Err(Error::new(ErrorKind::Other, "return_url is required"));
+        // }
 
         Ok(p)
     }

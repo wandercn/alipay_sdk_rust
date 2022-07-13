@@ -13,9 +13,9 @@ categories= ["api-bindings","accessibility","development-tools","compilers"]
 [dependencies]
 serde = {version = "1.0", features=["derive"]}
 serde_json = "1.0"
-gostd = "0.3"
-#rust-crypto = "^0.2"
+gostd = "^0.3"
 sha2 = "0.10.2"
 base64 = "0.13.0"
 rsa = "0.6.1"
 uuid = { version = "1.0.0", features = [ "v4", "fast-rng", "macro-diagnostics" ] }
+serde_with = "1.14.0"

@@ -6,7 +6,7 @@ use crate::{
     biz::BizContenter,
     pay::{PayClient, Payer},
     sign::{builder, Signer},
-    util::{get_biz_content_str, get_now_beijing_time_str, response_to_json},
+    util::{get_biz_content_str, get_now_beijing_time_str},
 };
 use std::{
     borrow::{Borrow, BorrowMut},
@@ -71,7 +71,7 @@ impl Requester for Request {
             private_key: pay_config.get_private_key(),
             public_key: pay_config.get_alipay_public_key(),
             app_cert_sn: pay_config.get_app_cert_sn(),
-            alipay_root_cert_sn: pay_config.get_app_cert_sn(),
+            alipay_root_cert_sn: pay_config.get_alipay_root_cert_sn(),
             app_id: pay_config.get_app_id(),
             format: pay_config.get_format(),
             charset: pay_config.get_charset(),

@@ -27,11 +27,6 @@ pub fn get_out_trade_no() -> String {
     Uuid::new_v4().to_string()
 }
 
-pub fn response_to_json<'a>(body: &'a [byte], mut res: impl Deserialize<'a>) -> Result<()> {
-    res = serde_json::from_slice(body)?;
-    Ok(())
-}
-
 pub fn build_form(base_url: &str, parameters: &mut HashMap<String, String>) -> String {
     let mut buf = strings::Builder::new();
     buf.WriteString("<form name=\"alipaysubmit\" method=\"post\" action=\"");

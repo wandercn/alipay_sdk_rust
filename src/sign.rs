@@ -97,7 +97,7 @@ impl Signer for SignSHA256WithRSA {
         }
     }
 
-    // SetPublicKey 通过RSA文字字符串设置RSA私钥
+    // SetPublicKey 通过RSA文字字符串设置RSA公钥
     fn set_public_key(&mut self, public_key_str: &str) -> Result<()> {
         let public_key = load_public_key(public_key_str)?;
         self.public_key = Some(public_key);
