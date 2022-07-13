@@ -91,16 +91,15 @@ pub struct PayClient {
     api_url: String,             // `json:"-"`                    // 接口网关地址
     private_key: String,         // `json:"-"`                    // rsa私钥单行文本字符串
     public_key: String,          // `json:"-"`                    // rsa公钥单行文本字符串
-    alipay_public_key: String,   // `json:"_"`                    // 证书解析出的支付宝公钥
-    app_cert_sn: String,         // `json:"app_cert_sn"`          // 应用公钥证书 SN
-    alipay_root_cert_sn: String, // `json:"alipay_root_cert_sn"`  // 支付宝根证书 SN
+    alipay_public_key: String, // `json:"_"`                    // 证书解析出的支付宝公钥 从alipayCertPublicKey_RSA2.crt 文件中提取
+    app_cert_sn: String, // `json:"app_cert_sn"`          // 应用公钥证书 SN 从appCertPublicKey_2021000117650139.crt 文件提取
+    alipay_root_cert_sn: String, // `json:"alipay_root_cert_sn"`  // 支付宝根证书 SN 从alipayRootCert.crt 文件中提取
     app_id: String, // `json:"app_id"`               // 是	32	支付宝分配给开发者的应用ID	2014072300007148
     format: String, // `json:"format,omitempty"`     // 否	40	仅支持JSON	JSON
     charset: String, // `json:"charset"`              // 是	10	请求使用的编码格式，如utf-8,gbk,gb2312等	utf-8
     sign_type: String, // `json:"sign_type"`            // 是	10	商户生成签名字符串所使用的签名算法类型，目前支持RSA2和RSA，推荐使用RSA2	RSA2
     version: String,   // `json:"version"`              // 是	3	调用的接口版本，固定为：1.0	1.0
     return_url: String, // `json:"return_url,omitempty"` // 否 前台回跳地址 return_url 自动跳转回商户页面
-    is_prod: bool,      //`json:"-"`                    // 是否生产环境
 }
 
 impl Payer for PayClient {
