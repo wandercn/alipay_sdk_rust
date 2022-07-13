@@ -3,18 +3,8 @@ use std::io::Result;
 use crate::{
     biz::{self, BizContenter},
     pay::{PayClient, Payer},
-    response::TradeCreateResponse,
 };
-#[test]
-fn test_trade_create() -> Result<()> {
-    let mut biz_content = biz::TradeCreateBiz::new();
-    biz_content.set_subject("huawei Mate50");
-    biz_content.set_out_trade_no("1620630871769533112");
-    biz_content.set_total_amount("5");
-    biz_content.set("seller_id", "2088621955702975");
-    biz_content.set_buyer_id("2088102175953034");
-    biz_content.set("Timestamp", "2022-07-11 16:09:04");
-
+fn test_new_pay_client() -> Result<impl Payer> {
     let client = PayClient::builder()
     .api_url("https://openapi.alipaydev.com/gateway.do")
     .app_id("2021000117650139")
@@ -28,9 +18,20 @@ fn test_trade_create() -> Result<()> {
 .sign_type_rsa2()
 .version_1_0()
 .build()?;
-    let body = client.do_alipay(&biz_content)?;
+    Ok(client)
+}
+#[test]
+fn test_trade_create() -> Result<()> {
+    let mut biz_content = biz::TradeCreateBiz::new();
+    biz_content.set_subject("huawei Mate50");
+    biz_content.set_out_trade_no("1620630871769533112");
+    biz_content.set_total_amount("5");
+    biz_content.set("seller_id", "2088621955702975");
+    biz_content.set_buyer_id("2088102175953034");
+    biz_content.set("Timestamp", "2022-07-11 16:09:04");
 
-    let res: TradeCreateResponse = serde_json::from_slice(&body)?;
+    let client = test_new_pay_client()?;
+    let res = client.trade_create(&biz_content)?;
     println!("{}", serde_json::to_string(&res)?);
     Ok(())
 }
