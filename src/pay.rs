@@ -446,7 +446,7 @@ impl PayClient {
             "alipay.trade.wap.pay" | "alipay.trade.page.pay" => {
                 self.create_clien_page_form(biz_content)
             }
-            "alipay.trade.app.pay" => self.create_clien_sdkt_request(biz_content),
+            "alipay.trade.app.pay" => self.create_clien_sdk_request(biz_content),
             _ => {
                 let mut request = Request::new_with_config(self.borrow());
                 request
@@ -479,7 +479,7 @@ impl PayClient {
         Ok(form)
     }
 
-    fn create_clien_sdkt_request(&self, biz: &impl BizContenter) -> Result<Vec<byte>> {
+    fn create_clien_sdk_request(&self, biz: &impl BizContenter) -> Result<Vec<byte>> {
         let client_sdk_request = Request::new_with_config(self.borrow())
             .set_biz_content(biz)
             .set_method(biz.method().as_str())
@@ -490,66 +490,69 @@ impl PayClient {
 }
 
 impl<'a> PayClientBuilder<'a> {
+    /// 设置接口网关地址 ,dev沙箱环境为：https://openapi.alipaydev.com/gateway.do，prod正式环境为：https://openapi.alipay.com/gateway.do
     pub fn api_url(&mut self, api_url: &'a str) -> &mut Self {
         self.api_url = Some(api_url);
         self.borrow_mut()
     }
 
+    /// 设置应用私钥 rsa私钥单行文本字符串,来源xxx_私钥.txt文件内容(PKCS1(非java适用))
     pub fn private_key(&mut self, private_key: &'a str) -> &mut Self {
         self.private_key = Some(private_key);
         self.borrow_mut()
     }
-
+    /// 设置应用公钥 rsa公钥单行文本字符串,来源xxx_公钥.txt文件内容(PKCS1(非java适用))
     pub fn public_key(&mut self, public_key: &'a str) -> &mut Self {
         self.public_key = Some(public_key);
         self.borrow_mut()
     }
-
+    /// 设置支付宝证书公钥, 来源 alipayCertPublicKey_RSA2.crt解析出的公钥
     pub fn alipay_public_key(&mut self, alipay_public_key: &'a str) -> &mut Self {
         self.alipay_public_key = Some(alipay_public_key);
         self.borrow_mut()
     }
-
+    /// 设置应用公钥证书 SN,来源appCertPublicKey_2021000117650139.crt文件解析
     pub fn app_cert_sn(&mut self, app_cert_sn: &'a str) -> &mut Self {
         self.app_cert_sn = Some(app_cert_sn);
         self.borrow_mut()
     }
-
+    /// 设置支付宝根证书 SN，来源alipayRootCert.crt文件解析
     pub fn alipay_root_cert_sn(&mut self, alipay_root_cert_sn: &'a str) -> &mut Self {
         self.alipay_root_cert_sn = Some(alipay_root_cert_sn);
         self.borrow_mut()
     }
-
+    /// 设置应用ID
     pub fn app_id(&mut self, app_id: &'a str) -> &mut Self {
         self.app_id = Some(app_id);
         self.borrow_mut()
     }
-
+    /// 设置请求格式，固定值json
     pub fn format_json(&mut self) -> &mut Self {
         self.format = Some("JSON");
         self.borrow_mut()
     }
-
+    /// 设置字符集，固定值 utf-8
     pub fn charset_utf8(&mut self) -> &mut Self {
         self.charset = Some("utf-8");
         self.borrow_mut()
     }
-
+    /// 设置签名类型，固定值RSA2
     pub fn sign_type_rsa2(&mut self) -> &mut Self {
         self.sign_type = Some("RSA2");
         self.borrow_mut()
     }
-
+    /// 设置接口版本号，固定值1.0
     pub fn version_1_0(&mut self) -> &mut Self {
         self.version = Some("1.0");
         self.borrow_mut()
     }
-
+    /// 设置前台回跳地址 return_url 自动跳转回商户页面
     pub fn return_url(&mut self, return_url: &'a str) -> &mut Self {
         self.return_url = Some(return_url);
         self.borrow_mut()
     }
 
+    /// 构造PayClient
     pub fn build(self) -> Result<impl Payer> {
         let mut p = PayClient::default();
         if let Some(api_url) = self.api_url {
