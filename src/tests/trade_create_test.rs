@@ -3,6 +3,7 @@ use std::io::Result;
 use crate::{
     biz::{self, BizContenter},
     pay::{PayClient, Payer},
+    util,
 };
 fn test_new_pay_client() -> Result<impl Payer> {
     let client = PayClient::builder()
@@ -22,7 +23,7 @@ fn test_new_pay_client() -> Result<impl Payer> {
 }
 #[test]
 fn test_trade_create() -> Result<()> {
-    let out_trade_no = gostd::time::Now().UnixNano().to_string();
+    let out_trade_no = util::get_out_trade_no();
     let mut biz_content = biz::TradeCreateBiz::new();
     biz_content.set_subject("huawei Mate50");
     biz_content.set_out_trade_no(&out_trade_no);

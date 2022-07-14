@@ -17,8 +17,9 @@
 //! use alipay_sdk_rust::biz::{self, BizContenter};
 //! use alipay_sdk_rust::pay::{PayClient, Payer};
 //! use alipay_sdk_rust::response::TradeCreateResponse;
+//! use alipay_sdk_rust::util;
 //! fn main() -> Result<()> {
-//! let out_trade_no = gostd::time::Now().UnixNano().to_string();
+//!     let out_trade_no = util::get_out_trade_no();
 //!     let mut biz_content = biz::TradeCreateBiz::new();
 //!     biz_content.set_subject("huawei Mate50");
 //!     biz_content.set_out_trade_no(&out_trade_no); // "1620630871769533112"
