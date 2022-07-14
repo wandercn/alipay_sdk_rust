@@ -8,7 +8,7 @@
 [![Build](https://img.shields.io/github/workflow/status/wandercn/alipay_sdk_rust/Rust.svg)](#)
 [![Languages](https://img.shields.io/github/languages/top/wandercn/alipay_sdk_rust.svg)](#)
 
- Alipay sdk in rust 支付宝支付 SDK。只支持最安全的RSA2，公钥证书方式签名验证方式,默认只支持utf-8编码和JSON格式。
+ Alipay sdk in rust 支付宝支付 SDK。只支持最安全的RSA2，公钥证书方式签名验证方式,默认只支持utf-8编码和JSON格式。目前只支持商户直接接入模式
 
  RSA2密钥生成请参考<https://opendocs.alipay.com/common/02kipl> 中的公钥证书方式生成，使用CSR文件申请，密钥格式必须使用PKCS1(非java适用)
 
