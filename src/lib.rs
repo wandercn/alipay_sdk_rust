@@ -18,7 +18,7 @@
 //! use alipay_sdk_rust::pay::{PayClient, Payer};
 //! use alipay_sdk_rust::response::TradeCreateResponse;
 //! fn main() -> Result<()> {
-//! let out_trade_no = gostd::time::Now().UnixNano().to_string();
+//!     let out_trade_no = gostd::time::Now().UnixNano().to_string();
 //!     let mut biz_content = biz::TradeCreateBiz::new();
 //!     biz_content.set_subject("huawei Mate50");
 //!     biz_content.set_out_trade_no(&out_trade_no); // "1620630871769533112"
@@ -56,6 +56,7 @@
 //! {"response":{"code":"10000","msg":"Success","trade_no":"2022071322001453030502038801","out_trade_no":"1620630871769533112"},"sign":"NgDoQ8wIjV0MY3/hA3BDvHOz3Jw7y6CTdGPD+Q4GBsvrAHDDRwbdki+jSGr66zutKtklUYJsizKVIGbmJmKKBhVSNdxWCRI++keWfHjWDLjy59hiRix0l8oFh+dhnXaQqjAXEjqOxjtd6WGgO9FhgX1Kz6GAZ8NJobwzXKor8fotA0E5ztpcPcRRF4KmdVioofAdSf0o9UTpM24uFmGuBwi0Cfae70jctpmn0CMXJ36g2FEe3pcZIWm/KWDAXwGH6daQccULwVjUYN01OyeM93wKuLXJwEhvIeLpJeW4AiXpU21W/qNgYINPkjRA/h/HmG6ooG14VfdHNXPjuQ0/sg==","alipay_cert_sn":"28e0499cc4ef722406edd30274314430"}
 //! `
 pub mod biz;
+pub mod cert;
 pub mod pay;
 pub mod request;
 pub mod response;
