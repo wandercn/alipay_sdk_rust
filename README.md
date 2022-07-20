@@ -65,3 +65,70 @@
  ```
  {"response":{"code":"10000","msg":"Success","trade_no":"2022071322001453030502038801","out_trade_no":"1620630871769533112"},"sign":"NgDoQ8wIjV0MY3/hA3BDvHOz3Jw7y6CTdGPD+Q4GBsvrAHDDRwbdki+jSGr66zutKtklUYJsizKVIGbmJmKKBhVSNdxWCRI++keWfHjWDLjy59hiRix0l8oFh+dhnXaQqjAXEjqOxjtd6WGgO9FhgX1Kz6GAZ8NJobwzXKor8fotA0E5ztpcPcRRF4KmdVioofAdSf0o9UTpM24uFmGuBwi0Cfae70jctpmn0CMXJ36g2FEe3pcZIWm/KWDAXwGH6daQccULwVjUYN01OyeM93wKuLXJwEhvIeLpJeW4AiXpU21W/qNgYINPkjRA/h/HmG6ooG14VfdHNXPjuQ0/sg==","alipay_cert_sn":"28e0499cc4ef722406edd30274314430"}
  ```
+
+# 怎么获取证书序列号,提取证书公钥 ?
+
+```rust
+use simplelog::{
+    ColorChoice, CombinedLogger, ConfigBuilder, LevelFilter, TermLogger, TerminalMode,
+    ThreadLogMode,
+};
+
+fn init_log() {
+    let config = ConfigBuilder::new()
+        .set_time_format_rfc3339()
+        .set_thread_mode(ThreadLogMode::Names)
+        .build();
+    CombinedLogger::init(vec![TermLogger::new(
+        LevelFilter::Debug,
+        config,
+        TerminalMode::Mixed,
+        ColorChoice::Always,
+    )])
+    .expect("init log faield!");
+}
+
+use alipay_sdk_rust::cert;
+
+const APP_CERT_SN_FILE: &str = "/Users/xxx/Documents/appCertPublicKey_2021000117650139.crt";
+const ALIPAY_ROOT_CERT_FILE: &str = "/Users/xxxx/Documents/alipayRootCert.crt";
+const ALIPAY_CERT_PUBLIC_KEY_RSA2_FILE: &str = "/Users/xxx/Documents/alipayCertPublicKey_RSA2.crt";
+fn main() {
+    init_log();
+    match cert::get_cert_sn(APP_CERT_SN_FILE) {
+        Ok(sn) => {
+            println!("app_cert_sn: {}", sn)
+        }
+        Err(err) => {
+            println!("get app_cert_sn faild: {}", err)
+        }
+    }
+
+    match cert::get_root_cert_sn(ALIPAY_ROOT_CERT_FILE) {
+        Ok(sn) => {
+            println!("alipay_root_cert_sn : {}", sn)
+        }
+        Err(err) => {
+            println!("get alipay_root_cert_sn faild: {}", err)
+        }
+    }
+    match cert::get_public_key_with_path(ALIPAY_CERT_PUBLIC_KEY_RSA2_FILE) {
+        Ok(sn) => {
+            println!("alipay_cert_public_key : {}", sn)
+        }
+        Err(err) => {
+            println!("faild: {}", err)
+        }
+    }
+}
+```
+
+## output
+```
+2022-07-20T10:21:18.9427Z [DEBUG] (main) alipay_sdk_rust::cert: cert_path: /Users/xxx/Documents/appCertPublicKey_2021000117650139.crt
+app_cert_sn: 8c68b9753e5b9e0bb7704a981936ecce
+2022-07-20T10:21:18.945293Z [DEBUG] (main) alipay_sdk_rust::cert: root_cert_path: "/Users/xxx/Documents/alipayRootCert.crt"
+alipay_root_cert_sn : 687b59193f3f462dd5336e5abf83c5d8_02941eef3187dddf3d3b83462e1dfcf6
+2022-07-20T10:21:18.948418Z [DEBUG] (main) alipay_sdk_rust::cert: alipay_cert_path: "/Users/xxx/Documents/alipayCertPublicKey_RSA2.crt"
+alipay_cert_public_key : MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoEz4Tegg1Ytfn2N+jWzDTOBbUNhcpIXz7dV3K8yIsDzinPwYTzzZhlCLYlKbfJGpSDVU0K3I6TnyGfNPEg+R7EC/3ycY1nETh8mxQ4dgrz8irKlLxSRDHVtPg4luncDz2u0hMab9QJdqF8DXD5H+r0Pdt6CSJgKJqLa0awPV3/8cTQZbhZ4ontnRdcwWWcp4/TunkEc891Aa5FmzWp4hgBYcu3BGcazS1HQA4r6wTwRkiqKsCwZeVTag4CiOeqe/vRFTxTMKF4gjRzdhTapUfcBCmXblEA3i8/7OILEyNHceRAxxxIpUjTyoRJ4/2xd0kWbw1gmkLFM0Fzee0eVgoQIDAQABs
+```
