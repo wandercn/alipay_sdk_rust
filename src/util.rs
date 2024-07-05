@@ -9,10 +9,14 @@ use gostd::time;
 use serde::Serialize;
 use serde_json;
 use std::collections::HashMap;
+use std::hash::BuildHasher;
 use uuid::Uuid;
 
-pub fn get_biz_content_str(w: &(impl BizContenter + Serialize)) -> String {
-    match serde_json::to_string(w) {
+pub fn get_biz_content_str<V>(w: &impl BizContenter<V>) -> String
+where
+    V: Serialize + Clone  ,
+{
+    match serde_json::to_string(&w) {
         Ok(res) => res,
         Err(_) => "".to_owned(),
     }
