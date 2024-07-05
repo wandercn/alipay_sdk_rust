@@ -27,51 +27,34 @@ use crate::response::{
 };
 use crate::util::{build_form, json_get};
 pub trait Payer {
-    fn trade_create<V>(&self, biz_content: &TradeCreateBiz<V>) -> Result<TradeCreateResponse>
-    where
-        V: Serialize + Clone;
-    fn trade_pay<V>(&self, biz_content: &TradePayBiz<V>) -> Result<TradePayResponse>
-    where
-        V: Serialize + Clone;
-    fn trade_precreate<V>(
+    fn trade_create(&self, biz_content: &TradeCreateBiz) -> Result<TradeCreateResponse>;
+
+    fn trade_pay(&self, biz_content: &TradePayBiz) -> Result<TradePayResponse>;
+
+    fn trade_precreate(&self, biz_content: &TradePrecreateBiz) -> Result<TradePrecreateResponse>;
+
+    fn trade_app_pay(&self, biz_content: &TradeAppPayBiz) -> Result<String>;
+
+    fn trade_wap_pay(&self, biz_content: &TradeWapPayBiz) -> Result<String>;
+
+    fn trade_page_pay(&self, biz_content: &TradePayBiz) -> Result<String>;
+
+    fn trede_query(&self, biz_content: &TradeQueryBiz) -> Result<TradeQueryResponse>;
+
+    fn trade_cancel(&self, biz_content: &TradeCancelBiz) -> Result<TradeCancelResponse>;
+
+    fn trade_refund(&self, biz_content: &TradeRefundBiz) -> Result<TradeRefundResponse>;
+
+    fn trade_page_refund(
         &self,
-        biz_content: &TradePrecreateBiz<V>,
-    ) -> Result<TradePrecreateResponse>
-    where
-        V: Serialize + Clone;
-    fn trade_app_pay<V>(&self, biz_content: &TradeAppPayBiz<V>) -> Result<String>
-    where
-        V: Serialize + Clone;
-    fn trade_wap_pay<V>(&self, biz_content: &TradeWapPayBiz<V>) -> Result<String>
-    where
-        V: Serialize + Clone;
-    fn trade_page_pay<V>(&self, biz_content: &TradePayBiz<V>) -> Result<String>
-    where
-        V: Serialize + Clone;
-    fn trede_query<V>(&self, biz_content: &TradeQueryBiz<V>) -> Result<TradeQueryResponse>
-    where
-        V: Serialize + Clone;
-    fn trade_cancel<V>(&self, biz_content: &TradeCancelBiz<V>) -> Result<TradeCancelResponse>
-    where
-        V: Serialize + Clone;
-    fn trade_refund<V>(&self, biz_content: &TradeRefundBiz<V>) -> Result<TradeRefundResponse>
-    where
-        V: Serialize + Clone;
-    fn trade_page_refund<V>(
+        biz_content: &TradePageRefundBiz,
+    ) -> Result<TradePageRefundResponse>;
+    fn trade_fastpay_refund_query(
         &self,
-        biz_content: &TradePageRefundBiz<V>,
-    ) -> Result<TradePageRefundResponse>
-    where
-        V: Serialize + Clone;
-    fn trade_fastpay_refund_query<V>(
-        &self,
-        biz_content: &TradeFastpayRefundQueryBiz<V>,
-    ) -> Result<TradeFastpayRefundQueryResponse>
-    where
-        V: Serialize + Clone;
-    fn trade_close<V>(&self, biz_content: &TradeCloseBiz<V>) -> Result<TradeCloseResponse>
-    where
-        V: Serialize + Clone;
+        biz_content: &TradeFastpayRefundQueryBiz,
+    ) -> Result<TradeFastpayRefundQueryResponse>;
+
+    fn trade_close(&self, biz_content: &TradeCloseBiz) -> Result<TradeCloseResponse>;
 }
 
 /// 实现Payer接口的各种方法
@@ -124,10 +107,7 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.create>
     ///
     /// alipay.trade.create(统一收单交易创建接口)
-    fn trade_create<V>(&self, biz_content: &TradeCreateBiz<V>) -> Result<TradeCreateResponse>
-    where
-        V: Serialize + Clone,
-    {
+    fn trade_create(&self, biz_content: &TradeCreateBiz) -> Result<TradeCreateResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeCreateResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
@@ -147,10 +127,7 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.pay>
     ///
     /// alipay.trade.pay(统一收单交易支付接口)
-    fn trade_pay<V>(&self, biz_content: &TradePayBiz<V>) -> Result<TradePayResponse>
-    where
-        V: Serialize + Clone,
-    {
+    fn trade_pay(&self, biz_content: &TradePayBiz) -> Result<TradePayResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradePayResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
@@ -170,13 +147,7 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.precreate>
     ///
     /// alipay.trade.precreate(统一收单线下交易预创建)当面付-商家生成条码
-    fn trade_precreate<V>(
-        &self,
-        biz_content: &TradePrecreateBiz<V>,
-    ) -> Result<TradePrecreateResponse>
-    where
-        V: Serialize + Clone,
-    {
+    fn trade_precreate(&self, biz_content: &TradePrecreateBiz) -> Result<TradePrecreateResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradePrecreateResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
@@ -196,10 +167,7 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.app.pay>
     ///
     /// alipay.trade.app.pay(app支付接口2.0)后端只生成form数据给前端调用
-    fn trade_app_pay<V>(&self, biz_content: &TradeAppPayBiz<V>) -> Result<String>
-    where
-        V: Serialize + Clone,
-    {
+    fn trade_app_pay(&self, biz_content: &TradeAppPayBiz) -> Result<String> {
         let body = self.do_alipay(biz_content)?;
         let res = String::from_utf8(body).map_err(|err| Error::new(ErrorKind::Other, err))?;
         Ok(res)
@@ -208,10 +176,7 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.wap.pay>
     ///
     /// alipay.trade.wap.pay(手机网站支付接口2.0)后端只生成form数据给前端调用
-    fn trade_wap_pay<V>(&self, biz_content: &TradeWapPayBiz<V>) -> Result<String>
-    where
-        V: Serialize + Clone,
-    {
+    fn trade_wap_pay(&self, biz_content: &TradeWapPayBiz) -> Result<String> {
         let body = self.do_alipay(biz_content)?;
         let res = String::from_utf8(body).map_err(|err| Error::new(ErrorKind::Other, err))?;
         Ok(res)
@@ -220,10 +185,7 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.page.pay>
     ///
     /// alipay.trade.page.pay(统一收单下单并支付页面接口)后端只生成form数据给前端调用
-    fn trade_page_pay<V>(&self, biz_content: &TradePayBiz<V>) -> Result<String>
-    where
-        V: Serialize + Clone,
-    {
+    fn trade_page_pay(&self, biz_content: &TradePayBiz) -> Result<String> {
         let body = self.do_alipay(biz_content)?;
         let res = String::from_utf8(body).map_err(|err| Error::new(ErrorKind::Other, err))?;
         Ok(res)
@@ -232,10 +194,7 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.query>
     ///
     /// alipay.trade.query(统一收单线下交易查询)
-    fn trede_query<V>(&self, biz_content: &TradeQueryBiz<V>) -> Result<TradeQueryResponse>
-    where
-        V: Serialize + Clone,
-    {
+    fn trede_query(&self, biz_content: &TradeQueryBiz) -> Result<TradeQueryResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeQueryResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
@@ -255,10 +214,7 @@ impl Payer for PayClient {
     ///  <https://opendocs.alipay.com/apis/api_1/alipay.trade.cancel>
     ///
     /// alipay.trade.cancel(统一收单交易撤销接口)
-    fn trade_cancel<V>(&self, biz_content: &TradeCancelBiz<V>) -> Result<TradeCancelResponse>
-    where
-        V: Serialize + Clone,
-    {
+    fn trade_cancel(&self, biz_content: &TradeCancelBiz) -> Result<TradeCancelResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeCancelResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
@@ -278,10 +234,7 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.refund>
     ///
     /// alipay.trade.refund(统一收单交易退款接口)
-    fn trade_refund<V>(&self, biz_content: &TradeRefundBiz<V>) -> Result<TradeRefundResponse>
-    where
-        V: Serialize + Clone,
-    {
+    fn trade_refund(&self, biz_content: &TradeRefundBiz) -> Result<TradeRefundResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeRefundResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
@@ -301,13 +254,10 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.page.refund>
     ///
     /// alipay.trade.page.refund(统一收单退款页面接口)
-    fn trade_page_refund<V>(
+    fn trade_page_refund(
         &self,
-        biz_content: &TradePageRefundBiz<V>,
-    ) -> Result<TradePageRefundResponse>
-    where
-        V: Serialize + Clone,
-    {
+        biz_content: &TradePageRefundBiz,
+    ) -> Result<TradePageRefundResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradePageRefundResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
@@ -326,13 +276,10 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.fastpay.refund.query>
     ///
     /// alipay.trade.fastpay.refund.query(统一收单交易退款查询)
-    fn trade_fastpay_refund_query<V>(
+    fn trade_fastpay_refund_query(
         &self,
-        biz_content: &TradeFastpayRefundQueryBiz<V>,
-    ) -> Result<TradeFastpayRefundQueryResponse>
-    where
-        V: Serialize + Clone,
-    {
+        biz_content: &TradeFastpayRefundQueryBiz,
+    ) -> Result<TradeFastpayRefundQueryResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeFastpayRefundQueryResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
@@ -352,10 +299,7 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.close>
     ///
     /// alipay.trade.close(统一收单交易关闭接口)
-    fn trade_close<V>(&self, biz_content: &TradeCloseBiz<V>) -> Result<TradeCloseResponse>
-    where
-        V: Serialize + Clone,
-    {
+    fn trade_close(&self, biz_content: &TradeCloseBiz) -> Result<TradeCloseResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeCloseResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
@@ -486,10 +430,7 @@ impl PayClient {
         }
     }
     /// 该方法对返回结果自带同步验签
-    pub fn do_alipay<V>(&self, biz_content: &impl BizContenter<V>) -> Result<Vec<byte>>
-    where
-        V: Serialize + Clone,
-    {
+    pub fn do_alipay(&self, biz_content: &impl BizContenter) -> Result<Vec<byte>> {
         // 同步验签
         let sync_verigy_sign = |response: &[byte]| -> Result<bool> {
             if let Ok(result) = std::str::from_utf8(response) {
@@ -533,10 +474,7 @@ impl PayClient {
         }
     }
 
-    fn create_clien_page_form<V>(&self, biz: &impl BizContenter<V>) -> Result<Vec<byte>>
-    where
-        V: Serialize + Clone,
-    {
+    fn create_clien_page_form(&self, biz: &impl BizContenter) -> Result<Vec<byte>> {
         let encode_query = Request::new_with_config(self.borrow())
             .set_biz_content(biz)
             .set_method(biz.method().as_str())
@@ -553,10 +491,7 @@ impl PayClient {
         Ok(form)
     }
 
-    fn create_clien_sdk_request<V>(&self, biz: &impl BizContenter<V>) -> Result<Vec<byte>>
-    where
-        V: Serialize + Clone,
-    {
+    fn create_clien_sdk_request(&self, biz: &impl BizContenter) -> Result<Vec<byte>> {
         let client_sdk_request = Request::new_with_config(self.borrow())
             .set_biz_content(biz)
             .set_method(biz.method().as_str())

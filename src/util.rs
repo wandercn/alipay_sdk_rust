@@ -12,10 +12,7 @@ use std::collections::HashMap;
 use std::hash::BuildHasher;
 use uuid::Uuid;
 
-pub fn get_biz_content_str<V>(w: &impl BizContenter<V>) -> String
-where
-    V: Serialize + Clone  ,
-{
+pub fn get_biz_content_str(w: &impl BizContenter) -> String {
     match serde_json::to_string(&w) {
         Ok(res) => res,
         Err(_) => "".to_owned(),

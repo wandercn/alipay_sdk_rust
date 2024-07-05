@@ -1,16 +1,13 @@
 #![allow(unused)]
 use std::hash::BuildHasher;
 
-use super::{BizContenter, BizObject};
+use super::{BizContenter, BizObject, V};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Default)]
-pub struct TradeRefundBiz<V>(BizObject<V>);
+pub struct TradeRefundBiz(BizObject);
 
-impl<V> BizContenter<V> for TradeRefundBiz<V>
-where
-    V: Serialize + Clone  ,
-{
+impl BizContenter for TradeRefundBiz {
     fn method(&self) -> String {
         "alipay.trade.refund".to_string()
     }
@@ -20,10 +17,7 @@ where
     }
 }
 // 以下是设置必选字段方法
-impl<V> TradeRefundBiz<V>
-where
-    V: Serialize + Clone  ,
-{
+impl TradeRefundBiz {
     pub fn new() -> Self {
         Self(BizObject::new())
     }
