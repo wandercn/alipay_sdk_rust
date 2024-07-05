@@ -20,19 +20,21 @@ fn test_new_pay_client() -> Result<impl Payer> {
 .build()?;
     Ok(client)
 }
+
 #[test]
 fn test_trade_create() -> Result<()> {
     let out_trade_no = gostd::time::Now().UnixNano().to_string();
-    let mut biz_content = biz::TradeCreateBiz::new();
-    biz_content.set_subject("huawei Mate50");
-    biz_content.set_out_trade_no(&out_trade_no);
-    biz_content.set_total_amount("5");
-    biz_content.set("seller_id", "2088621955702975");
-    biz_content.set_buyer_id("2088102175953034");
-    biz_content.set("Timestamp", "2022-07-20 16:09:04");
+    let mut biz_content = biz::TradeCreateBiz::<String>::new();
+    biz_content.set_subject("huawei Mate50".to_string());
+    biz_content.set_out_trade_no(out_trade_no.clone());
+    biz_content.set_total_amount("5".to_string());
+    biz_content.set("seller_id", "2088621955702975".to_string());
+    biz_content.set_buyer_id("2088102175953034".to_string());
+    biz_content.set("Timestamp", "2022-07-20 16:09:04".to_string());
 
     let client = test_new_pay_client()?;
     let res = client.trade_create(&biz_content)?;
     println!("{}", serde_json::to_string(&res)?);
+
     Ok(())
 }

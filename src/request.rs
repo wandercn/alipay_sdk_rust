@@ -12,6 +12,7 @@ use crate::{
 use std::{
     borrow::{Borrow, BorrowMut},
     collections::HashMap,
+    hash::BuildHasher,
     io::Result,
 };
 
@@ -19,7 +20,9 @@ pub trait Requester {
     fn new_with_config(pay_config: &PayClient) -> Self;
     fn set_method(&mut self, method: &str) -> &mut Self;
     fn method(&self) -> String;
-    fn set_biz_content(&mut self, b: &impl BizContenter) -> &mut Self;
+    fn set_biz_content<V>(&mut self, b: &impl BizContenter<V>) -> &mut Self
+    where
+        V: Serialize + Clone;
     fn encode_payload(&mut self) -> Result<String>;
 }
 
@@ -93,7 +96,10 @@ impl Requester for Request {
         self.method.to_string()
     }
 
-    fn set_biz_content(&mut self, b: &impl BizContenter) -> &mut Self {
+    fn set_biz_content<V>(&mut self, b: &impl BizContenter<V>) -> &mut Self
+    where
+        V: Serialize + Clone,
+    {
         self.biz_content = get_biz_content_str(b);
         self.borrow_mut()
     }
