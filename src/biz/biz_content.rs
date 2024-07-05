@@ -1,6 +1,6 @@
 use gostd::strings;
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, hash::BuildHasher};
+use std::{collections::HashMap};
 
 /// 独立请求参数接口 BizContenter
 /// 通过枚举类型支持 HashMap 内的Vlaue值可以同时存储 浮点型，整数，字符串，数组，对象类型。

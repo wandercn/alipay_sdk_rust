@@ -20,12 +20,12 @@
 //! fn main() -> Result<()> {
 //!     let out_trade_no = gostd::time::Now().UnixNano().to_string();
 //!     let mut biz_content = biz::TradeCreateBiz::new();
-//!     biz_content.set_subject("huawei Mate50");
-//!     biz_content.set_out_trade_no(&out_trade_no); // "1620630871769533112"
-//!     biz_content.set_total_amount("5");
-//!     biz_content.set("seller_id", "2088621955702975");
-//!     biz_content.set_buyer_id("2088102175953034");
-//!     biz_content.set("Timestamp", "2022-07-11 16:09:04");/////!
+//!     biz_content.set_subject("huawei Mate50".into());
+//!     biz_content.set_out_trade_no(&out_trade_no.into()); // "1620630871769533112"
+//!     biz_content.set_total_amount("5".into());
+//!     biz_content.set("seller_id", "2088621955702975".into());
+//!     biz_content.set_buyer_id("2088102175953034".into());
+//!     biz_content.set("Timestamp", "2022-07-11 16:09:04".into());/////!
 //!     let client = new_pay_client()?;
 //!     let res = client.trade_create(&biz_content)?;
 //!    println!("{}", serde_json::to_string(&res)?);

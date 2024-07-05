@@ -54,7 +54,7 @@ impl Request {
 
     fn get_sorted_sign_source(&self) -> Result<String> {
         let mut m = HashMap::<String, String>::new();
-        let v = serde_json::to_string(self.borrow())?;
+        let v = serde_json::to_string(self)?;
         m = serde_json::from_str(v.as_str())?;
         let mut query_list = Vec::<String>::new();
         m.iter().for_each(|(k, v)| {

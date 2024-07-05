@@ -1,3 +1,4 @@
+#![allow(unused)]
 //! 请求参数模块,构造各种接口的独立请求参数。
 mod biz_content;
 pub use biz_content::*;
@@ -13,6 +14,7 @@ mod trade_fastpay_refund_query;
 pub use trade_fastpay_refund_query::*;
 mod trade_page_pay;
 pub use trade_app_pay::*;
+
 mod trade_page_refund;
 pub use trade_page_refund::*;
 mod trade_pay;

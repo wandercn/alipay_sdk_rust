@@ -6,7 +6,7 @@ use crate::{
 };
 fn test_new_pay_client() -> Result<impl Payer> {
     let client = PayClient::builder()
-    .api_url("https://openapi.alipaydev.com/gateway.do")
+    .api_url("https://openapi-sandbox.dl.alipaydev.com/gateway.do")
     .app_id("2021000117650139")
     .alipay_root_cert_sn("687b59193f3f462dd5336e5abf83c5d8_02941eef3187dddf3d3b83462e1dfcf6")
     .alipay_public_key("MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoEz4Tegg1Ytfn2N+jWzDTOBbUNhcpIXz7dV3K8yIsDzinPwYTzzZhlCLYlKbfJGpSDVU0K3I6TnyGfNPEg+R7EC/3ycY1nETh8mxQ4dgrz8irKlLxSRDHVtPg4luncDz2u0hMab9QJdqF8DXD5H+r0Pdt6CSJgKJqLa0awPV3/8cTQZbhZ4ontnRdcwWWcp4/TunkEc891Aa5FmzWp4hgBYcu3BGcazS1HQA4r6wTwRkiqKsCwZeVTag4CiOeqe/vRFTxTMKF4gjRzdhTapUfcBCmXblEA3i8/7OILEyNHceRAxxxIpUjTyoRJ4/2xd0kWbw1gmkLFM0Fzee0eVgoQIDAQAB")

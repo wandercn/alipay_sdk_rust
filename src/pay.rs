@@ -460,11 +460,12 @@ impl PayClient {
             }
             "alipay.trade.app.pay" => self.create_clien_sdk_request(biz_content),
             _ => {
-                let mut request = Request::new_with_config(self.borrow());
+                let mut request = Request::new_with_config(self);
                 request
                     .set_biz_content(biz_content)
                     .set_method(biz_content.method().as_str());
                 let res = self.execute(&mut request)?;
+                dbg!(String::from_utf8(res.to_vec()));
                 let is_pass = sync_verigy_sign(&res)?;
                 if !is_pass {
                     return Err(Error::new(ErrorKind::Other, "syncVerifySign no passed!"));
@@ -475,7 +476,7 @@ impl PayClient {
     }
 
     fn create_clien_page_form(&self, biz: &impl BizContenter) -> Result<Vec<byte>> {
-        let encode_query = Request::new_with_config(self.borrow())
+        let encode_query = Request::new_with_config(self)
             .set_biz_content(biz)
             .set_method(biz.method().as_str())
             .encode_payload()?;
@@ -492,7 +493,7 @@ impl PayClient {
     }
 
     fn create_clien_sdk_request(&self, biz: &impl BizContenter) -> Result<Vec<byte>> {
-        let client_sdk_request = Request::new_with_config(self.borrow())
+        let client_sdk_request = Request::new_with_config(self)
             .set_biz_content(biz)
             .set_method(biz.method().as_str())
             .encode_payload()?;
