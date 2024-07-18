@@ -33,7 +33,7 @@
 //!     biz_content.set_total_amount("5".into());
 //!     biz_content.set("seller_id", "2088721038897364".into());
 //!     biz_content.set_buyer_id("2088722038897372".into());
-//!     biz_content.set("Timestamp", "2024-07-08 16:09:04".into());/////!
+//!     biz_content.set("Timestamp", "2024-07-08 16:09:04".into());
 //!     let client = new_pay_client()?;
 //!     let res = client.trade_create(&biz_content)?;
 //!    println!("{}", serde_json::to_string(&res)?);
