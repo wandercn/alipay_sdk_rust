@@ -16,8 +16,8 @@ use serde::{Deserialize, Serialize};
 
 use crate::biz::{
     self, BizContenter, TradeAppPayBiz, TradeCancelBiz, TradeCloseBiz, TradeCreateBiz,
-    TradeFastpayRefundQueryBiz, TradePageRefundBiz, TradePayBiz, TradePrecreateBiz, TradeQueryBiz,
-    TradeRefundBiz, TradeWapPayBiz,
+    TradeFastpayRefundQueryBiz, TradePagePayBiz, TradePageRefundBiz, TradePayBiz,
+    TradePrecreateBiz, TradeQueryBiz, TradeRefundBiz, TradeWapPayBiz,
 };
 use crate::request::{Request, Requester};
 use crate::response::{
@@ -37,7 +37,7 @@ pub trait Payer {
 
     fn trade_wap_pay(&self, biz_content: &TradeWapPayBiz) -> Result<String>;
 
-    fn trade_page_pay(&self, biz_content: &TradePayBiz) -> Result<String>;
+    fn trade_page_pay(&self, biz_content: &TradePagePayBiz) -> Result<String>;
 
     fn trede_query(&self, biz_content: &TradeQueryBiz) -> Result<TradeQueryResponse>;
 
@@ -185,7 +185,7 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.page.pay>
     ///
     /// alipay.trade.page.pay(统一收单下单并支付页面接口)后端只生成form数据给前端调用
-    fn trade_page_pay(&self, biz_content: &TradePayBiz) -> Result<String> {
+    fn trade_page_pay(&self, biz_content: &TradePagePayBiz) -> Result<String> {
         let body = self.do_alipay(biz_content)?;
         let res = String::from_utf8(body).map_err(|err| Error::new(ErrorKind::Other, err))?;
         Ok(res)
@@ -453,7 +453,6 @@ impl PayClient {
                 Err(Error::new(ErrorKind::Other, "from_utf8 response failed!"))
             }
         };
-
         match biz_content.method().as_str() {
             "alipay.trade.wap.pay" | "alipay.trade.page.pay" => {
                 self.create_clien_page_form(biz_content)
@@ -486,6 +485,7 @@ impl PayClient {
         for (k, v) in values {
             parameters.insert(k, v[0].to_string());
         }
+
         let form = build_form(&self.api_url(), &mut parameters)
             .as_bytes()
             .to_vec();

@@ -13,7 +13,7 @@ pub use trade_create::*;
 mod trade_fastpay_refund_query;
 pub use trade_fastpay_refund_query::*;
 mod trade_page_pay;
-pub use trade_app_pay::*;
+pub use trade_page_pay::*;
 
 mod trade_page_refund;
 pub use trade_page_refund::*;
