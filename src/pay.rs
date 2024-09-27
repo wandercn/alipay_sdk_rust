@@ -25,7 +25,7 @@ use crate::response::{
     TradeFastpayRefundQueryResponse, TradePageRefundResponse, TradePayResponse,
     TradePrecreateResponse, TradeQueryResponse, TradeRefundResponse,
 };
-use crate::util::{build_form, json_get};
+use crate::util::{self, build_form, json_get};
 pub trait Payer {
     fn trade_create(&self, biz_content: &TradeCreateBiz) -> Result<TradeCreateResponse>;
 
@@ -55,6 +55,7 @@ pub trait Payer {
     ) -> Result<TradeFastpayRefundQueryResponse>;
 
     fn trade_close(&self, biz_content: &TradeCloseBiz) -> Result<TradeCloseResponse>;
+    fn async_verify_sign(&self, raw_body: &[u8]) -> Result<bool>;
 }
 
 /// 实现Payer接口的各种方法
@@ -101,6 +102,7 @@ pub struct PayClient {
     sign_type: String, // `json:"sign_type"`            // 是	10	商户生成签名字符串所使用的签名算法类型，目前支持RSA2和RSA，推荐使用RSA2	RSA2
     version: String,   // `json:"version"`              // 是	3	调用的接口版本，固定为：1.0	1.0
     return_url: String, // `json:"return_url,omitempty"` // 否 前台回跳地址 return_url 自动跳转回商户页面
+    notify_url: String, // `json:"notify_url,omitempty"` 支付宝服务器主动通知callback商户服务器里指定的页面http/https路径
 }
 
 impl Payer for PayClient {
@@ -315,6 +317,15 @@ impl Payer for PayClient {
         }
         Ok(res)
     }
+    /// 自行实现签名文档 https://opendocs.alipay.com/common/02mse7?pathHash=096e611e
+    ///
+    /// 支付宝异步回调信息，用支付宝公钥验证签名，确认消息是支付宝服务器发出的,必须设置过异步通知的回调url连接和notify_url参数
+    fn async_verify_sign(&self, raw_body: &[u8]) -> Result<bool> {
+        let (source, sign, sign_type) = util::get_async_callback_msg_source(raw_body)?;
+        let mut singer = builder().set_sign_type(&sign_type).build();
+        singer.set_public_key(&self.alipay_public_key())?;
+        return Ok(singer.verify(&source, &sign)?);
+    }
 }
 
 /// 构造器
@@ -332,6 +343,7 @@ pub struct PayClientBuilder<'a> {
     sign_type: Option<&'a str>, // `json:"sign_type"`            // 是	10	商户生成签名字符串所使用的签名算法类型，目前支持RSA2和RSA，推荐使用RSA2	RSA2
     version: Option<&'a str>, // `json:"version"`              // 是	3	调用的接口版本，固定为：1.0	1.0
     return_url: Option<&'a str>, // `json:"return_url,omitempty"` // 否 前台回跳地址 return_url 自动跳转回商户页面
+    notify_url: Option<&'a str>, // `json:"notify_url,omitempty"`  支付宝服务器主动通知callback商户服务器里指定的页面http/https路径
 }
 
 impl PayClient {
@@ -385,6 +397,14 @@ impl PayClient {
 
     pub fn return_url(&self) -> String {
         self.return_url.to_owned()
+    }
+
+    pub fn notify_url(&self) -> String {
+        self.notify_url.to_owned()
+    }
+
+    pub fn set_notify_url(&mut self, notify_url: &str) {
+        self.notify_url = notify_url.to_owned()
     }
 
     pub fn set_sign_type(&mut self, sign_type: &str) {
@@ -564,6 +584,11 @@ impl<'a> PayClientBuilder<'a> {
         self.return_url = Some(return_url);
         self.borrow_mut()
     }
+    /// 支付宝服务器主动通知callback商户服务器里指定的页面http/https路径
+    pub fn notify_url(&mut self, notify_url: &'a str) -> &mut Self {
+        self.notify_url = Some(notify_url);
+        self.borrow_mut()
+    }
 
     /// 构造PayClient
     pub fn build(self) -> Result<impl Payer> {
@@ -642,6 +667,10 @@ impl<'a> PayClientBuilder<'a> {
 
         if let Some(return_url) = self.return_url {
             p.return_url = return_url.to_owned();
+        }
+
+        if let Some(notify_url) = self.notify_url {
+            p.notify_url = notify_url.to_owned()
         }
 
         Ok(p)

@@ -21,6 +21,7 @@
 
  - [x] BizContenter trait 对应的set 方法设支持vlaue值可以是字符串，整型和浮点型，数组和对象同时存储在一个HashMap中。版本：v1.0.5
  - [x] 适配最新的沙箱环境测试 版本：v1.0.5
+ - [x] async_verify_sign 增加了异步通知验签函数 版本：v1.0.8
  
  # Example
  ## apidoc

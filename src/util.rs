@@ -114,3 +114,39 @@ pub fn json_get(result: &str, key: &str) -> String {
         Err(_) => "".to_string(),
     }
 }
+
+use gostd::net::url;
+use std::io::Result;
+
+// 获取支付宝CallBack异步消息的待签名字符串和签名
+// 自行实现签名文档 https://opendocs.alipay.com/common/02mse7?pathHash=096e611e
+// 返回值 source - 签名字符串 , sign - 签名 , sign_type - 签名类型
+pub fn get_async_callback_msg_source(raw_body: &[u8]) -> Result<(String, String, String)> {
+    // 解析 URL 查询字符串
+    let raw_str = String::from_utf8_lossy(raw_body);
+    let values = url::ParseQuery(&raw_str)?;
+
+    let sign_type = values.Get("sign_type");
+    let sign = values.Get("sign");
+
+    // 待签名字符串不包括sign和sign_type,需要删除
+    let mut filtered_values = values.clone();
+    filtered_values.Del("sign");
+    filtered_values.Del("sign_type");
+
+    // 按字典排序
+    let mut keys: Vec<String> = vec![];
+    for (k, _) in &filtered_values {
+        keys.push(k.to_string());
+    }
+    keys.sort();
+
+    // 拼接成待签名字符串
+    let source: String = keys
+        .iter()
+        .map(|k| format!("{}={}", k.to_string(), filtered_values.to_owned().Get(k)))
+        .collect::<Vec<String>>()
+        .join("&");
+
+    Ok((source, sign, sign_type))
+}
