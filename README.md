@@ -9,8 +9,6 @@
 [![Languages](https://img.shields.io/github/languages/top/wandercn/alipay_sdk_rust.svg)](#)
 
 
-[![Donate with Ethereum](https://img.shields.io/badge/Donate%20with-Ethereum-3C3C3D?style=for-the-badge&logo=ethereum)](https://etherscan.io/address/你的以太坊地址)
-
 
 
 
