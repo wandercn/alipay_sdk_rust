@@ -9,6 +9,8 @@
 [![Languages](https://img.shields.io/github/languages/top/wandercn/alipay_sdk_rust.svg)](#)
 
 
+[![Donate with Ethereum](https://img.shields.io/badge/Donate%20with-Ethereum-3C3C3D?style=for-the-badge&logo=ethereum)](https://etherscan.io/address/你的以太坊地址)
+
 
 
 
@@ -17,7 +19,7 @@
  RSA2密钥生成请参考<https://opendocs.alipay.com/common/02kipl> 中的公钥证书方式生成，使用CSR文件申请，密钥格式必须使用PKCS1(非java适用)
 
 
- # 升级修改
+ ## 升级修改
 
  - [x] BizContenter trait 对应的set 方法设支持vlaue值可以是字符串，整型和浮点型，数组和对象同时存储在一个HashMap中。版本：v1.0.5
  - [x] 适配最新的沙箱环境测试 版本：v1.0.5
@@ -143,3 +145,13 @@ alipay_root_cert_sn : 687b59193f3f462dd5336e5abf83c5d8_02941eef3187dddf3d3b83462
 2024-07-08T07:02:58.784153Z [DEBUG] (main) alipay_sdk_rust::cert: alipay_cert_path: "/Users/lsmiao/Documents/支付宝新沙箱环境/alipayPublicCert.crt"
 alipay_cert_public_key : MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjRE7n0tuGp4e/3RwUnExLxU0JUDsbOOpFgGO/UJT2jidePGRN/GJlqMREfkyYh+JwAhs2ehEUG1j5wnKBIeqCHN8SixwQamyqkMypSJhCUIxfPGOkdD2Vj7n+/iVCFJvmUWBUN5OqD57x410mf1HXlcKegmyFVB1BzHkDLRm3y4+iBMYNsPkZNNZisbv/5etDodCLVQRS/2EiBSHLEjD85Vtm6gCkYieKRdIshyUMwiNr1dIJIJEhdrNt0hsEDkXAbeIRUN9j7OijoZ6Wr076i3+NBuci5wOC7bzLPbU56v2TmJ1yHPqFjAkHKMEesWPHDv7tKANUdsSV03fx1XI6QIDAQAB
 ```
+
+
+## 捐赠方式
+
+If you like my open source project and would like to support me, you can donate through the following methods:
+- **alipay:** `limiao2008@gmail.com`
+- **ETH address:** `0x74682cbE11De154E38D8B220ba177c28481F41a8`
+- **PayPal:** `paypal.me/wandercn`
+
+Thank you for your support!
