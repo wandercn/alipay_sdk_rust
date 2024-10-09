@@ -143,7 +143,6 @@ alipay_root_cert_sn : 687b59193f3f462dd5336e5abf83c5d8_02941eef3187dddf3d3b83462
 2024-07-08T07:02:58.784153Z [DEBUG] (main) alipay_sdk_rust::cert: alipay_cert_path: "/Users/lsmiao/Documents/支付宝新沙箱环境/alipayPublicCert.crt"
 alipay_cert_public_key : MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjRE7n0tuGp4e/3RwUnExLxU0JUDsbOOpFgGO/UJT2jidePGRN/GJlqMREfkyYh+JwAhs2ehEUG1j5wnKBIeqCHN8SixwQamyqkMypSJhCUIxfPGOkdD2Vj7n+/iVCFJvmUWBUN5OqD57x410mf1HXlcKegmyFVB1BzHkDLRm3y4+iBMYNsPkZNNZisbv/5etDodCLVQRS/2EiBSHLEjD85Vtm6gCkYieKRdIshyUMwiNr1dIJIJEhdrNt0hsEDkXAbeIRUN9j7OijoZ6Wr076i3+NBuci5wOC7bzLPbU56v2TmJ1yHPqFjAkHKMEesWPHDv7tKANUdsSV03fx1XI6QIDAQAB
 ```
-
 ## 捐赠方式
 
 If you like my open source project and would like to support me, you can donate through the following methods:
