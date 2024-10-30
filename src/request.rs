@@ -29,8 +29,10 @@ pub trait Requester {
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct Request {
     // 是否必填	最大长度	描述	示例值
+    #[serde(skip_serializing)]
     private_key: String, //`json:"-"`                        // rsa私钥单行文本字符串
-    public_key: String,  //`json:"-"`                        // rsa公钥单行文本字符串
+    #[serde(skip_serializing)]
+    public_key: String, //`json:"-"`                        // rsa公钥单行文本字符串
     app_cert_sn: String, //`json:"app_cert_sn"`              // 应用公钥证书 SN
     alipay_root_cert_sn: String, //`json:"alipay_root_cert_sn"`      // 支付宝根证书 SN
     app_id: String, //`json:"app_id"`                   // 是	32	支付宝分配给开发者的应用ID	2014072300007148
