@@ -18,3 +18,4 @@ Cargo.lock
 .idea/vcs.xml
 cjlintignore.cfg
 .DS_Store
+.vscode/settings.json
