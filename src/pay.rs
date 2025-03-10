@@ -39,7 +39,7 @@ pub trait Payer {
 
     fn trade_page_pay(&self, biz_content: &TradePagePayBiz) -> Result<String>;
 
-    fn trede_query(&self, biz_content: &TradeQueryBiz) -> Result<TradeQueryResponse>;
+    fn trade_query(&self, biz_content: &TradeQueryBiz) -> Result<TradeQueryResponse>;
 
     fn trade_cancel(&self, biz_content: &TradeCancelBiz) -> Result<TradeCancelResponse>;
 
@@ -196,7 +196,7 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.query>
     ///
     /// alipay.trade.query(统一收单线下交易查询)
-    fn trede_query(&self, biz_content: &TradeQueryBiz) -> Result<TradeQueryResponse> {
+    fn trade_query(&self, biz_content: &TradeQueryBiz) -> Result<TradeQueryResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeQueryResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
