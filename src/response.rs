@@ -404,7 +404,7 @@ pub struct PrecreateResponse {
     pub sub_code: Option<String>,
     pub sub_msg: Option<String>,
     pub out_trade_no: Option<String>,
-    pub qrcode: Option<String>,
+    pub qr_code: Option<String>,
 }
 
 //===================================================
