@@ -38,12 +38,12 @@ pub struct PayResponse {
     pub point_amount: Option<String>,
     pub invoice_amount: Option<String>,
     pub gmt_payment: Option<String>,
-    pub fund_bill_list: Vec<FundBill>,
+    pub fund_bill_list: Option<Vec<FundBill>>,
     pub card_balance: Option<String>,
     pub store_name: Option<String>,
     pub buyer_user_id: Option<String>,
     pub discount_goods_detail: Option<String>,
-    pub voucher_detail_list: Vec<VoucherDetail>,
+    pub voucher_detail_list: Option<Vec<VoucherDetail>>,
     pub advance_amount: Option<String>,
     pub auth_trade_pay_mode: Option<String>,
     pub charge_amount: Option<String>,
@@ -117,13 +117,13 @@ pub struct QueryResponse {
     pub receipt_amount: Option<String>,
     pub store_id: Option<String>,
     pub terminal_id: Option<String>,
-    pub fund_bill_list: FundBill,
+    pub fund_bill_list: Option<Vec<FundBill>>,
     pub store_name: Option<String>,
     pub buyer_user_id: Option<String>,
     pub charge_amount: Option<String>,
     pub charge_flags: Option<String>,
     pub settlement_id: Option<String>,
-    pub trade_settle_info: Vec<TradeSettleInfo>,
+    pub trade_settle_info: Option<Vec<TradeSettleInfo>>,
     pub auth_trade_pay_mode: Option<String>,
     pub buyer_user_type: Option<String>,
     pub mdiscount_amount: Option<String>,
@@ -235,8 +235,8 @@ pub struct SystemOauthTokenResponse {
 struct OauthTokenInfo {
     access_token: Option<String>,
     alipay_user_id: Option<String>,
-    expires_in: i32,
-    re_expires_in: i32,
+    expires_in: Option<i32>,
+    re_expires_in: Option<i32>,
     refresh_token: Option<String>,
     user_id: Option<String>,
 }
@@ -295,10 +295,10 @@ pub struct RefundResponse {
     pub refund_fee: Option<String>,
     pub refund_currency: Option<String>,
     pub gmt_refund_pay: Option<String>,
-    pub refund_detail_item_list: Vec<TradeFundBill>,
+    pub refund_detail_item_list: Option<Vec<TradeFundBill>>,
     pub store_name: Option<String>,
     pub buyer_user_id: Option<String>,
-    pub refund_preset_paytool_list: Vec<RefundPresetPaytool>,
+    pub refund_preset_paytool_list: Option<Vec<RefundPresetPaytool>>,
     pub refund_settlement_id: Option<String>,
     pub present_refund_buyer_amount: Option<String>,
     pub present_refund_discount_amount: Option<String>,
@@ -308,7 +308,7 @@ pub struct RefundResponse {
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
 pub struct RefundPresetPaytool {
-    pub amount: Vec<String>,
+    pub amount: Option<Vec<String>>,
     pub assert_type_code: Option<String>,
 }
 
@@ -345,9 +345,9 @@ pub struct RefundQueryResponse {
     pub refund_reason: Option<String>,
     pub total_amount: Option<String>,
     pub refund_amount: Option<String>,
-    pub refund_royaltys: Vec<RefundRoyalty>,
+    pub refund_royaltys: Option<Vec<RefundRoyalty>>,
     pub gmt_refund_pay: Option<String>,
-    pub refund_detail_item_list: Vec<TradeFundBill>,
+    pub refund_detail_item_list: Option<Vec<TradeFundBill>>,
     pub send_back_fee: Option<String>,
     pub refund_settlement_id: Option<String>,
     pub present_refund_buyer_amount: Option<String>,
@@ -404,7 +404,7 @@ pub struct PrecreateResponse {
     pub sub_code: Option<String>,
     pub sub_msg: Option<String>,
     pub out_trade_no: Option<String>,
-    pub qrcode: Option<String>,
+    pub qr_code: Option<String>,
 }
 
 //===================================================
@@ -496,7 +496,7 @@ struct AuthTokenAppResponse {
     app_refresh_token: Option<String>,
     expires_in: Option<i32>,
     re_expires_in: Option<i32>,
-    tokens: Vec<Token>,
+    tokens: Option<Vec<Token>>,
 }
 
 #[skip_serializing_none]
@@ -565,7 +565,7 @@ struct AlipayUserCertifyOpenQueryResponse {
     msg: Option<String>,
     sub_code: Option<String>,
     sub_msg: Option<String>,
-    passed: Vec<String>,
+    passed: Option<Vec<String>>,
     identity_info: Option<String>,
     material_info: Option<String>,
 }

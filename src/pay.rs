@@ -204,7 +204,7 @@ impl Payer for PayClient {
             return Err(Error::new(
                 ErrorKind::Other,
                 format!(
-                    "trede_query failed: {} code:{}",
+                    "trade_query failed: {} code:{}",
                     res.response.sub_msg.unwrap().as_str(),
                     res.response.sub_code.unwrap().as_str()
                 ),
@@ -484,7 +484,7 @@ impl PayClient {
                     .set_biz_content(biz_content)
                     .set_method(biz_content.method().as_str());
                 let res = self.execute(&mut request)?;
-                dbg!(String::from_utf8(res.to_vec()));
+                // dbg!(String::from_utf8(res.to_vec()));
                 let is_pass = sync_verigy_sign(&res)?;
                 if !is_pass {
                     return Err(Error::new(ErrorKind::Other, "syncVerifySign no passed!"));
