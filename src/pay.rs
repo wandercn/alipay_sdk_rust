@@ -204,7 +204,7 @@ impl Payer for PayClient {
             return Err(Error::new(
                 ErrorKind::Other,
                 format!(
-                    "trede_query failed: {} code:{}",
+                    "trade_query failed: {} code:{}",
                     res.response.sub_msg.unwrap().as_str(),
                     res.response.sub_code.unwrap().as_str()
                 ),
