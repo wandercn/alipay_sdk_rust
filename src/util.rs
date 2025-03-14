@@ -127,7 +127,8 @@ pub fn get_async_callback_msg_source(raw_body: &[u8]) -> Result<(String, String,
     let values = url::ParseQuery(&raw_str)?;
 
     let sign_type = values.Get("sign_type");
-    let sign = values.Get("sign");
+    // ParseQuery函数会把sign字符串的+解析成空格，需要还原回去
+    let sign = values.Get("sign").replace(" ", "+");
 
     // 待签名字符串不包括sign和sign_type,需要删除
     let mut filtered_values = values.clone();
