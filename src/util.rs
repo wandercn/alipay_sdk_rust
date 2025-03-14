@@ -85,17 +85,19 @@ pub fn json_get(result: &str, key: &str) -> String {
     current = result.as_bytes()[index];
     let mut left_brackets = 0_usize;
     if current == b'{' || current == b'[' {
-        while current != b'}' && current != b']' {
+        loop {
             index += 1;
             current = result.as_bytes()[index];
             if current == b'{' || current == b'[' {
                 left_brackets += 1;
             }
+            
+            if (current == b']' || current == b'}') && left_brackets == 0 {
+                break;
+            }
 
             if (current == b']' || current == b'}') && left_brackets > 0 {
-                index += 1;
                 left_brackets -= 1;
-                current = result.as_bytes()[index];
             }
         }
         end = index + 1;
