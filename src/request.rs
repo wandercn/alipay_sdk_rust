@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     biz::BizContenter,
+    error::AliPayResult,
     pay::{PayClient, Payer},
     sign::{builder, Signer},
     util::{get_biz_content_str, get_now_beijing_time_str},
@@ -22,7 +23,7 @@ pub trait Requester {
     fn method(&self) -> String;
     fn set_biz_content(&mut self, b: &impl BizContenter) -> &mut Self;
 
-    fn encode_payload(&mut self) -> Result<String>;
+    fn encode_payload(&mut self) -> AliPayResult<String>;
 }
 
 /// 实现 Requester 接口的各种方法
@@ -54,7 +55,7 @@ impl Request {
         self.timestamp = get_now_beijing_time_str()
     }
 
-    fn get_sorted_sign_source(&self) -> Result<String> {
+    fn get_sorted_sign_source(&self) -> AliPayResult<String> {
         let mut m = HashMap::<String, String>::new();
         let v = serde_json::to_string(self)?;
         m = serde_json::from_str(v.as_str())?;
@@ -103,7 +104,7 @@ impl Requester for Request {
         self.borrow_mut()
     }
 
-    fn encode_payload(&mut self) -> Result<String> {
+    fn encode_payload(&mut self) -> AliPayResult<String> {
         let mut signer = builder().set_sign_type(&self.sign_type).build();
         signer.set_private_key(&self.private_key)?;
         let sign_sorted_source = self.get_sorted_sign_source()?;

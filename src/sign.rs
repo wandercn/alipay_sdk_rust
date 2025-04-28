@@ -15,12 +15,15 @@ use std::{
 };
 
 use sha2::{Digest, Sha256};
+
+use crate::error::AliPaySDKError::AliPayError;
+use crate::error::{AliPayResult, AliPaySDKError};
 /// 签名接口
 pub trait Signer {
-    fn set_private_key(&mut self, private_key_str: &str) -> Result<()>;
-    fn sign(&self, source: &str) -> Result<String>;
-    fn verify(&self, source: &str, signature: &str) -> Result<bool>;
-    fn set_public_key(&mut self, public_key_str: &str) -> Result<()>;
+    fn set_private_key(&mut self, private_key_str: &str) -> AliPayResult<()>;
+    fn sign(&self, source: &str) -> AliPayResult<String>;
+    fn verify(&self, source: &str, signature: &str) -> AliPayResult<bool>;
+    fn set_public_key(&mut self, public_key_str: &str) -> AliPayResult<()>;
 }
 
 /// 构造器
@@ -61,16 +64,16 @@ pub struct SignSHA256WithRSA {
 
 impl Signer for SignSHA256WithRSA {
     // SetPrivateKey 通过RSA文本字符串设置RSA私钥
-    fn set_private_key(&mut self, private_key_str: &str) -> Result<()> {
+    fn set_private_key(&mut self, private_key_str: &str) -> AliPayResult<()> {
         let private_key = load_private_key(private_key_str)?;
         self.private_key = Some(private_key);
         Ok(())
     }
 
-    fn sign(&self, source: &str) -> Result<String> {
+    fn sign(&self, source: &str) -> AliPayResult<String> {
         let digest = Sha256::digest(source.as_bytes());
         if self.private_key.is_none() {
-            return Err(Error::new(ErrorKind::Other, "private_key is None"));
+            return Err(AliPayError("private_key is None".to_string()));
         }
         if let Ok(signature_byte) = self.private_key.as_ref().unwrap().sign(
             PaddingScheme::new_pkcs1v15_sign(Some(Hash::SHA2_256)),
@@ -78,11 +81,11 @@ impl Signer for SignSHA256WithRSA {
         ) {
             Ok(base64::encode(signature_byte))
         } else {
-            Err(Error::new(ErrorKind::Other, "pkcs1v15_sign failed"))
+            Err(AliPayError("pkcs1v15_sign failed".to_string()))
         }
     }
 
-    fn verify(&self, source: &str, signature: &str) -> Result<bool> {
+    fn verify(&self, source: &str, signature: &str) -> AliPayResult<bool> {
         let mut hashed = Sha256::new();
         hashed.update(source.as_bytes());
         if let Ok(decode_signature) = base64::decode(signature) {
@@ -95,40 +98,38 @@ impl Signer for SignSHA256WithRSA {
                 Err(err) => Ok(false),
             }
         } else {
-            Err(Error::new(ErrorKind::Other, "base64 decode signature"))
+            Err(AliPayError("base64 decode signature".to_string()))
         }
     }
 
     // SetPublicKey 通过RSA文字字符串设置RSA公钥
-    fn set_public_key(&mut self, public_key_str: &str) -> Result<()> {
+    fn set_public_key(&mut self, public_key_str: &str) -> AliPayResult<()> {
         let public_key = load_public_key(public_key_str)?;
         self.public_key = Some(public_key);
         Ok(())
     }
 }
 
-pub fn load_private_key(private_key_str: &str) -> Result<RsaPrivateKey> {
+pub fn load_private_key(private_key_str: &str) -> AliPayResult<RsaPrivateKey> {
     if let Ok(private_key) =
         RsaPrivateKey::from_pkcs1_pem(&format_pkcs1_private_key(private_key_str))
     {
         Ok(private_key)
     } else {
-        Err(Error::new(
-            ErrorKind::Other,
-            "RsaPrivateKey from_pkcs1_pem failed",
+        Err(AliPayError(
+            "RsaPrivateKey from_pkcs1_pem failed".to_string(),
         ))
     }
 }
 
-pub fn load_public_key(public_key_str: &str) -> Result<RsaPublicKey> {
+pub fn load_public_key(public_key_str: &str) -> AliPayResult<RsaPublicKey> {
     if let Ok(public_key) =
         RsaPublicKey::from_public_key_pem(&format_pem_public_key(public_key_str))
     {
         Ok(public_key)
     } else {
-        Err(Error::new(
-            ErrorKind::Other,
-            "RsaPublicKey from_public_key_pem failed",
+        Err(AliPayError(
+            "RsaPublicKey from_public_key_pem failed".to_string(),
         ))
     }
 }
