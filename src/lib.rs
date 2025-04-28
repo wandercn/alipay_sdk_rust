@@ -21,11 +21,11 @@
 //! (如下的Example使用的是沙箱环境下本人申请的自定义公钥证书) (已经适配新版沙箱环境,新版沙箱网关地址是https://openapi-sandbox.dl.alipaydev.com/gateway.do)
 //!
 //! ```rust
-//! use std::io::Result;
+//! use alipay_sdk_rust::error::AliPayResult;
 //! use alipay_sdk_rust::biz::{self, BizContenter};
 //! use alipay_sdk_rust::pay::{PayClient, Payer};
 //! use alipay_sdk_rust::response::TradeCreateResponse;
-//! fn main() -> Result<()> {
+//! fn main() -> AliPayResult<()> {
 //!     let out_trade_no = gostd::time::Now().UnixNano().to_string();
 //!     let mut biz_content = biz::TradeCreateBiz::new();
 //!     biz_content.set_subject("huawei Mate50".into());
@@ -40,7 +40,7 @@
 //!     Ok(())
 //! }
 //!
-//! fn new_pay_client() -> Result<impl Payer> {
+//! fn new_pay_client() -> AliPayResult<impl Payer> {
 //!    let client = PayClient::builder()
 //! .api_url("https://openapi-sandbox.dl.alipaydev.com/gateway.do")
 //! .app_id("9021000138690920")
@@ -65,11 +65,11 @@
 //! `
 pub mod biz;
 pub mod cert;
+pub mod error;
 pub mod pay;
 pub mod request;
 pub mod response;
 pub mod sign;
-pub mod util;
-
 #[cfg(test)]
 mod tests;
+pub mod util;

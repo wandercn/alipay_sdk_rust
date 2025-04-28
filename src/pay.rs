@@ -1,13 +1,16 @@
 //! 支付模块，包括各种支付接口函数。
 #![allow(unused)]
+// use anyhow::Result;
 use std::collections::HashMap;
 use std::hash::BuildHasher;
-use std::io::Result;
-use std::io::{Error, ErrorKind};
+
+// use std::io::{Error, ErrorKind};
 
 use std::borrow::{Borrow, BorrowMut};
 use std::sync::Arc;
 
+use crate::error::AliPaySDKError::AliPayError;
+use crate::error::{AliPayResult, AliPaySDKError};
 use crate::sign::{builder, Signer};
 use gostd::builtin::byte;
 use gostd::net::http;
@@ -27,35 +30,38 @@ use crate::response::{
 };
 use crate::util::{self, build_form, json_get};
 pub trait Payer {
-    fn trade_create(&self, biz_content: &TradeCreateBiz) -> Result<TradeCreateResponse>;
+    fn trade_create(&self, biz_content: &TradeCreateBiz) -> AliPayResult<TradeCreateResponse>;
 
-    fn trade_pay(&self, biz_content: &TradePayBiz) -> Result<TradePayResponse>;
+    fn trade_pay(&self, biz_content: &TradePayBiz) -> AliPayResult<TradePayResponse>;
 
-    fn trade_precreate(&self, biz_content: &TradePrecreateBiz) -> Result<TradePrecreateResponse>;
+    fn trade_precreate(
+        &self,
+        biz_content: &TradePrecreateBiz,
+    ) -> AliPayResult<TradePrecreateResponse>;
 
-    fn trade_app_pay(&self, biz_content: &TradeAppPayBiz) -> Result<String>;
+    fn trade_app_pay(&self, biz_content: &TradeAppPayBiz) -> AliPayResult<String>;
 
-    fn trade_wap_pay(&self, biz_content: &TradeWapPayBiz) -> Result<String>;
+    fn trade_wap_pay(&self, biz_content: &TradeWapPayBiz) -> AliPayResult<String>;
 
-    fn trade_page_pay(&self, biz_content: &TradePagePayBiz) -> Result<String>;
+    fn trade_page_pay(&self, biz_content: &TradePagePayBiz) -> AliPayResult<String>;
 
-    fn trade_query(&self, biz_content: &TradeQueryBiz) -> Result<TradeQueryResponse>;
+    fn trade_query(&self, biz_content: &TradeQueryBiz) -> AliPayResult<TradeQueryResponse>;
 
-    fn trade_cancel(&self, biz_content: &TradeCancelBiz) -> Result<TradeCancelResponse>;
+    fn trade_cancel(&self, biz_content: &TradeCancelBiz) -> AliPayResult<TradeCancelResponse>;
 
-    fn trade_refund(&self, biz_content: &TradeRefundBiz) -> Result<TradeRefundResponse>;
+    fn trade_refund(&self, biz_content: &TradeRefundBiz) -> AliPayResult<TradeRefundResponse>;
 
     fn trade_page_refund(
         &self,
         biz_content: &TradePageRefundBiz,
-    ) -> Result<TradePageRefundResponse>;
+    ) -> AliPayResult<TradePageRefundResponse>;
     fn trade_fastpay_refund_query(
         &self,
         biz_content: &TradeFastpayRefundQueryBiz,
-    ) -> Result<TradeFastpayRefundQueryResponse>;
+    ) -> AliPayResult<TradeFastpayRefundQueryResponse>;
 
-    fn trade_close(&self, biz_content: &TradeCloseBiz) -> Result<TradeCloseResponse>;
-    fn async_verify_sign(&self, raw_body: &[u8]) -> Result<bool>;
+    fn trade_close(&self, biz_content: &TradeCloseBiz) -> AliPayResult<TradeCloseResponse>;
+    fn async_verify_sign(&self, raw_body: &[u8]) -> AliPayResult<bool>;
 }
 
 /// 实现Payer接口的各种方法
@@ -67,11 +73,11 @@ pub trait Payer {
 /// 避免每次输入大量参数，建议像如下例子，单独写一个函数需要使用的时候调用函数就可以。
 ///
 /// ```
-///use std::io::Result;
 /// use alipay_sdk_rust::biz::{self, BizContenter};
+/// use alipay_sdk_rust::error::AliPayResult;
 /// use alipay_sdk_rust::pay::{PayClient, Payer};
 /// use alipay_sdk_rust::response::TradeCreateResponse;
-/// fn new_pay_client() -> Result<impl Payer> {
+/// fn new_pay_client() -> AliPayResult<impl Payer> {
 ///     let client = PayClient::builder()
 /// .api_url("https://openapi.alipaydev.com/gateway.do")
 /// .app_id("2021000117650139")
@@ -109,19 +115,16 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.create>
     ///
     /// alipay.trade.create(统一收单交易创建接口)
-    fn trade_create(&self, biz_content: &TradeCreateBiz) -> Result<TradeCreateResponse> {
+    fn trade_create(&self, biz_content: &TradeCreateBiz) -> AliPayResult<TradeCreateResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeCreateResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
             log::debug!("{}", serde_json::to_string(&res)?);
-            return Err(Error::new(
-                ErrorKind::Other,
-                format!(
-                    "trade_create failed: {} code:{}",
-                    res.response.sub_msg.unwrap().as_str(),
-                    res.response.sub_code.unwrap().as_str()
-                ),
-            ));
+            return Err(AliPayError(format!(
+                "trade_create failed: {} code:{}",
+                res.response.sub_msg.unwrap().as_str(),
+                res.response.sub_code.unwrap().as_str()
+            )));
         }
         Ok(res)
     }
@@ -129,19 +132,16 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.pay>
     ///
     /// alipay.trade.pay(统一收单交易支付接口)
-    fn trade_pay(&self, biz_content: &TradePayBiz) -> Result<TradePayResponse> {
+    fn trade_pay(&self, biz_content: &TradePayBiz) -> AliPayResult<TradePayResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradePayResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
             log::debug!("{}", serde_json::to_string(&res)?);
-            return Err(Error::new(
-                ErrorKind::Other,
-                format!(
-                    "trade_pay failed: {} code:{}",
-                    res.response.sub_msg.unwrap().as_str(),
-                    res.response.sub_code.unwrap().as_str()
-                ),
-            ));
+            return Err(AliPayError(format!(
+                "trade_pay failed: {} code:{}",
+                res.response.sub_msg.unwrap().as_str(),
+                res.response.sub_code.unwrap().as_str()
+            )));
         }
         Ok(res)
     }
@@ -149,19 +149,19 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.precreate>
     ///
     /// alipay.trade.precreate(统一收单线下交易预创建)当面付-商家生成条码
-    fn trade_precreate(&self, biz_content: &TradePrecreateBiz) -> Result<TradePrecreateResponse> {
+    fn trade_precreate(
+        &self,
+        biz_content: &TradePrecreateBiz,
+    ) -> AliPayResult<TradePrecreateResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradePrecreateResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
             log::debug!("{}", serde_json::to_string(&res)?);
-            return Err(Error::new(
-                ErrorKind::Other,
-                format!(
-                    "trade_precreate failed: {} code:{}",
-                    res.response.sub_msg.unwrap().as_str(),
-                    res.response.sub_code.unwrap().as_str()
-                ),
-            ));
+            return Err(AliPayError(format!(
+                "trade_precreate failed: {} code:{}",
+                res.response.sub_msg.unwrap().as_str(),
+                res.response.sub_code.unwrap().as_str()
+            )));
         }
         Ok(res)
     }
@@ -169,46 +169,43 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.app.pay>
     ///
     /// alipay.trade.app.pay(app支付接口2.0)后端只生成form数据给前端调用
-    fn trade_app_pay(&self, biz_content: &TradeAppPayBiz) -> Result<String> {
+    fn trade_app_pay(&self, biz_content: &TradeAppPayBiz) -> AliPayResult<String> {
         let body = self.do_alipay(biz_content)?;
-        let res = String::from_utf8(body).map_err(|err| Error::new(ErrorKind::Other, err))?;
+        let res = String::from_utf8(body)?;
         Ok(res)
     }
 
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.wap.pay>
     ///
     /// alipay.trade.wap.pay(手机网站支付接口2.0)后端只生成form数据给前端调用
-    fn trade_wap_pay(&self, biz_content: &TradeWapPayBiz) -> Result<String> {
+    fn trade_wap_pay(&self, biz_content: &TradeWapPayBiz) -> AliPayResult<String> {
         let body = self.do_alipay(biz_content)?;
-        let res = String::from_utf8(body).map_err(|err| Error::new(ErrorKind::Other, err))?;
+        let res = String::from_utf8(body)?;
         Ok(res)
     }
 
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.page.pay>
     ///
     /// alipay.trade.page.pay(统一收单下单并支付页面接口)后端只生成form数据给前端调用
-    fn trade_page_pay(&self, biz_content: &TradePagePayBiz) -> Result<String> {
+    fn trade_page_pay(&self, biz_content: &TradePagePayBiz) -> AliPayResult<String> {
         let body = self.do_alipay(biz_content)?;
-        let res = String::from_utf8(body).map_err(|err| Error::new(ErrorKind::Other, err))?;
+        let res = String::from_utf8(body)?;
         Ok(res)
     }
 
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.query>
     ///
     /// alipay.trade.query(统一收单线下交易查询)
-    fn trade_query(&self, biz_content: &TradeQueryBiz) -> Result<TradeQueryResponse> {
+    fn trade_query(&self, biz_content: &TradeQueryBiz) -> AliPayResult<TradeQueryResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeQueryResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
             log::debug!("{}", serde_json::to_string(&res)?);
-            return Err(Error::new(
-                ErrorKind::Other,
-                format!(
-                    "trade_query failed: {} code:{}",
-                    res.response.sub_msg.unwrap().as_str(),
-                    res.response.sub_code.unwrap().as_str()
-                ),
-            ));
+            return Err(AliPayError(format!(
+                "trade_query failed: {} code:{}",
+                res.response.sub_msg.unwrap().as_str(),
+                res.response.sub_code.unwrap().as_str()
+            )));
         }
         Ok(res)
     }
@@ -216,19 +213,16 @@ impl Payer for PayClient {
     ///  <https://opendocs.alipay.com/apis/api_1/alipay.trade.cancel>
     ///
     /// alipay.trade.cancel(统一收单交易撤销接口)
-    fn trade_cancel(&self, biz_content: &TradeCancelBiz) -> Result<TradeCancelResponse> {
+    fn trade_cancel(&self, biz_content: &TradeCancelBiz) -> AliPayResult<TradeCancelResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeCancelResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
             log::debug!("{}", serde_json::to_string(&res)?);
-            return Err(Error::new(
-                ErrorKind::Other,
-                format!(
-                    "trade_cancel failed: {} code:{}",
-                    res.response.sub_msg.unwrap().as_str(),
-                    res.response.sub_code.unwrap().as_str()
-                ),
-            ));
+            return Err(AliPayError(format!(
+                "trade_cancel failed: {} code:{}",
+                res.response.sub_msg.unwrap().as_str(),
+                res.response.sub_code.unwrap().as_str()
+            )));
         }
         Ok(res)
     }
@@ -236,19 +230,16 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.refund>
     ///
     /// alipay.trade.refund(统一收单交易退款接口)
-    fn trade_refund(&self, biz_content: &TradeRefundBiz) -> Result<TradeRefundResponse> {
+    fn trade_refund(&self, biz_content: &TradeRefundBiz) -> AliPayResult<TradeRefundResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeRefundResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
             log::debug!("{}", serde_json::to_string(&res)?);
-            return Err(Error::new(
-                ErrorKind::Other,
-                format!(
-                    "trade_refund failed: {} code:{}",
-                    res.response.sub_msg.unwrap().as_str(),
-                    res.response.sub_code.unwrap().as_str()
-                ),
-            ));
+            return Err(AliPayError(format!(
+                "trade_refund failed: {} code:{}",
+                res.response.sub_msg.unwrap().as_str(),
+                res.response.sub_code.unwrap().as_str()
+            )));
         }
         Ok(res)
     }
@@ -259,19 +250,16 @@ impl Payer for PayClient {
     fn trade_page_refund(
         &self,
         biz_content: &TradePageRefundBiz,
-    ) -> Result<TradePageRefundResponse> {
+    ) -> AliPayResult<TradePageRefundResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradePageRefundResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
             log::debug!("{}", serde_json::to_string(&res)?);
-            return Err(Error::new(
-                ErrorKind::Other,
-                format!(
-                    "trade_page_refund failed: {} code:{}",
-                    res.response.sub_msg.unwrap().as_str(),
-                    res.response.sub_code.unwrap().as_str()
-                ),
-            ));
+            return Err(AliPayError(format!(
+                "trade_page_refund failed: {} code:{}",
+                res.response.sub_msg.unwrap().as_str(),
+                res.response.sub_code.unwrap().as_str()
+            )));
         }
         Ok(res)
     }
@@ -281,19 +269,16 @@ impl Payer for PayClient {
     fn trade_fastpay_refund_query(
         &self,
         biz_content: &TradeFastpayRefundQueryBiz,
-    ) -> Result<TradeFastpayRefundQueryResponse> {
+    ) -> AliPayResult<TradeFastpayRefundQueryResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeFastpayRefundQueryResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
             log::debug!("{}", serde_json::to_string(&res)?);
-            return Err(Error::new(
-                ErrorKind::Other,
-                format!(
-                    "trade_fastpay_refund_query failed: {} code:{}",
-                    res.response.sub_msg.unwrap().as_str(),
-                    res.response.sub_code.unwrap().as_str()
-                ),
-            ));
+            return Err(AliPayError(format!(
+                "trade_fastpay_refund_query failed: {} code:{}",
+                res.response.sub_msg.unwrap().as_str(),
+                res.response.sub_code.unwrap().as_str()
+            )));
         }
         Ok(res)
     }
@@ -301,26 +286,23 @@ impl Payer for PayClient {
     /// <https://opendocs.alipay.com/apis/api_1/alipay.trade.close>
     ///
     /// alipay.trade.close(统一收单交易关闭接口)
-    fn trade_close(&self, biz_content: &TradeCloseBiz) -> Result<TradeCloseResponse> {
+    fn trade_close(&self, biz_content: &TradeCloseBiz) -> AliPayResult<TradeCloseResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeCloseResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
             log::debug!("{}", serde_json::to_string(&res)?);
-            return Err(Error::new(
-                ErrorKind::Other,
-                format!(
-                    "trade_close failed: {} code:{}",
-                    res.response.sub_msg.unwrap().as_str(),
-                    res.response.sub_code.unwrap().as_str()
-                ),
-            ));
+            return Err(AliPayError(format!(
+                "trade_close failed: {} code:{}",
+                res.response.sub_msg.unwrap().as_str(),
+                res.response.sub_code.unwrap().as_str(),
+            )));
         }
         Ok(res)
     }
     /// 自行实现签名文档 https://opendocs.alipay.com/common/02mse7?pathHash=096e611e
     ///
     /// 支付宝异步回调信息，用支付宝公钥验证签名，确认消息是支付宝服务器发出的,必须设置过异步通知的回调url连接和notify_url参数
-    fn async_verify_sign(&self, raw_body: &[u8]) -> Result<bool> {
+    fn async_verify_sign(&self, raw_body: &[u8]) -> AliPayResult<bool> {
         let (source, sign, sign_type) = util::get_async_callback_msg_source(raw_body)?;
         let mut singer = builder().set_sign_type(&sign_type).build();
         singer.set_public_key(&self.alipay_public_key())?;
@@ -415,7 +397,7 @@ impl PayClient {
         self.charset = charset.to_owned()
     }
 
-    pub fn execute(&self, req: &mut impl Requester) -> Result<Vec<byte>> {
+    pub fn execute(&self, req: &mut impl Requester) -> AliPayResult<Vec<byte>> {
         let method = req.method();
         let payload = req.encode_payload()?;
         let mut request = http::Request::default();
@@ -427,11 +409,7 @@ impl PayClient {
                 None,
             )?;
         } else {
-            request = http::Request::New(
-                http::Method::Post,
-                &self.api_url,
-                Some(payload.as_bytes().to_vec()),
-            )?;
+            request = http::Request::New(http::Method::Post, &self.api_url, Some(payload.into()))?;
         }
         //  设置客户端请求的编号格式utf-8, 解决中文有乱码问题。
         request.Header.Set(
@@ -445,37 +423,34 @@ impl PayClient {
 
         let res = client.Do(request.borrow_mut())?;
         match res.Body {
-            Some(body) => Ok(body),
-            None => Err(Error::new(ErrorKind::Other, "body is NONE")),
+            Some(body) => Ok(body.into()),
+            None => Err(AliPaySDKError::AliPayError("body is NONE".to_string())),
         }
     }
     /// 该方法对返回结果自带同步验签
-    pub fn do_alipay(&self, biz_content: &impl BizContenter) -> Result<Vec<byte>> {
+    pub fn do_alipay(&self, biz_content: &impl BizContenter) -> AliPayResult<Vec<byte>> {
         // 同步验签
-        let sync_verigy_sign = |response: &[byte]| -> Result<bool> {
-            if let Ok(result) = std::str::from_utf8(response) {
-                let get_raw_source = || -> String {
-                    let key = biz::get_response_key(biz_content);
-                    json_get(result, &key)
-                };
+        let sync_verigy_sign = |response: &[byte]| -> AliPayResult<bool> {
+            let result = std::str::from_utf8(response)?;
+            let get_raw_source = || -> String {
+                let key = biz::get_response_key(biz_content);
+                json_get(result, &key)
+            };
 
-                let get_signture = || -> String { json_get(result, "sign") };
+            let get_signture = || -> String { json_get(result, "sign") };
 
-                let mut singer = builder().set_sign_type(self.sign_type().as_str()).build();
+            let mut singer = builder().set_sign_type(self.sign_type().as_str()).build();
 
-                singer.set_public_key(self.alipay_public_key().as_str())?;
-                let passed = singer.verify(&get_raw_source(), &get_signture())?;
-                if !passed {
-                    return Ok(false);
-                }
-                Ok(true)
-            } else {
-                Err(Error::new(ErrorKind::Other, "from_utf8 response failed!"))
+            singer.set_public_key(self.alipay_public_key().as_str())?;
+            let passed = singer.verify(&get_raw_source(), &get_signture())?;
+            if !passed {
+                return Ok(false);
             }
+            Ok(true)
         };
         match biz_content.method().as_str() {
             "alipay.trade.wap.pay" | "alipay.trade.page.pay" => {
-                self.create_clien_page_form(biz_content)
+                Ok(self.create_clien_page_form(biz_content)?)
             }
             "alipay.trade.app.pay" => self.create_clien_sdk_request(biz_content),
             _ => {
@@ -487,14 +462,14 @@ impl PayClient {
                 // dbg!(String::from_utf8(res.to_vec()));
                 let is_pass = sync_verigy_sign(&res)?;
                 if !is_pass {
-                    return Err(Error::new(ErrorKind::Other, "syncVerifySign no passed!"));
+                    return Err(AliPayError("syncVerifySign no passed!".to_string()));
                 }
                 Ok(res)
             }
         }
     }
 
-    fn create_clien_page_form(&self, biz: &impl BizContenter) -> Result<Vec<byte>> {
+    fn create_clien_page_form(&self, biz: &impl BizContenter) -> AliPayResult<Vec<byte>> {
         let encode_query = Request::new_with_config(self)
             .set_biz_content(biz)
             .set_method(biz.method().as_str())
@@ -512,7 +487,7 @@ impl PayClient {
         Ok(form)
     }
 
-    fn create_clien_sdk_request(&self, biz: &impl BizContenter) -> Result<Vec<byte>> {
+    fn create_clien_sdk_request(&self, biz: &impl BizContenter) -> AliPayResult<Vec<byte>> {
         let client_sdk_request = Request::new_with_config(self)
             .set_biz_content(biz)
             .set_method(biz.method().as_str())
@@ -591,54 +566,56 @@ impl<'a> PayClientBuilder<'a> {
     }
 
     /// 构造PayClient
-    pub fn build(self) -> Result<impl Payer> {
+    pub fn build(self) -> AliPayResult<impl Payer> {
         let mut p = PayClient::default();
         if let Some(api_url) = self.api_url {
             p.api_url = api_url.to_owned();
         } else {
-            return Err(Error::new(ErrorKind::Other, "api_url is required"));
+            return Err(AliPaySDKError::AliPayError(
+                "api_url is required".to_string(),
+            ));
         }
 
         if let Some(private_key) = self.private_key {
             p.private_key = private_key.to_owned();
         } else {
-            return Err(Error::new(ErrorKind::Other, "private_key is required"));
+            return Err(AliPaySDKError::AliPayError(
+                "private_key is required".to_string(),
+            ));
         }
 
         if let Some(public_key) = self.public_key {
             p.public_key = public_key.to_owned();
         } else {
-            return Err(Error::new(ErrorKind::Other, "public_key is required"));
+            return Err(AliPaySDKError::AliPayError(
+                "public_key is required".to_string(),
+            ));
         }
 
         if let Some(app_cert_sn) = self.app_cert_sn {
             p.app_cert_sn = app_cert_sn.to_owned();
         } else {
-            return Err(Error::new(ErrorKind::Other, "app_cert_sn is required"));
+            return Err(AliPaySDKError::AliPayError(
+                "app_cert_sn is required".to_string(),
+            ));
         }
 
         if let Some(alipay_root_cert_sn) = self.alipay_root_cert_sn {
             p.alipay_root_cert_sn = alipay_root_cert_sn.to_owned();
         } else {
-            return Err(Error::new(
-                ErrorKind::Other,
-                "alipay_root_cert_sn is required",
-            ));
+            return Err(AliPayError("alipay_root_cert_sn is required".to_string()));
         }
 
         if let Some(app_id) = self.app_id {
             p.app_id = app_id.to_owned();
         } else {
-            return Err(Error::new(ErrorKind::Other, "app_id is required"));
+            return Err(AliPayError("app_id is required".to_string()));
         }
 
         if let Some(alipay_public_key) = self.alipay_public_key {
             p.alipay_public_key = alipay_public_key.to_owned();
         } else {
-            return Err(Error::new(
-                ErrorKind::Other,
-                "alipay_public_key is required",
-            ));
+            return Err(AliPayError("alipay_public_key is required".to_string()));
         }
 
         if let Some(format) = self.format {
