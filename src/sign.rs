@@ -16,8 +16,11 @@ use std::{
 
 use sha2::{Digest, Sha256};
 
-use crate::error::AliPaySDKError::AliPayError;
-use crate::error::{AliPayResult, AliPaySDKError};
+use crate::{error::AliPaySDKError::AliPayError, util::base64_encode};
+use crate::{
+    error::{AliPayResult, AliPaySDKError},
+    util::base64_decode,
+};
 /// 签名接口
 pub trait Signer {
     fn set_private_key(&mut self, private_key_str: &str) -> AliPayResult<()>;
@@ -79,7 +82,7 @@ impl Signer for SignSHA256WithRSA {
             PaddingScheme::new_pkcs1v15_sign(Some(Hash::SHA2_256)),
             digest.as_slice(),
         ) {
-            Ok(base64::encode(signature_byte))
+            Ok(base64_encode(signature_byte))
         } else {
             Err(AliPayError("pkcs1v15_sign failed".to_string()))
         }
@@ -88,7 +91,7 @@ impl Signer for SignSHA256WithRSA {
     fn verify(&self, source: &str, signature: &str) -> AliPayResult<bool> {
         let mut hashed = Sha256::new();
         hashed.update(source.as_bytes());
-        if let Ok(decode_signature) = base64::decode(signature) {
+        if let Ok(decode_signature) = base64_decode(signature) {
             match self.public_key.as_ref().unwrap().verify(
                 PaddingScheme::new_pkcs1v15_sign(Some(Hash::SHA2_256)),
                 &hashed.finalize(),

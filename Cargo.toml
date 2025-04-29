@@ -1,7 +1,7 @@
 [package]
 name = "alipay_sdk_rust"
 license = "MIT"
-version = "1.0.13"
+version = "1.0.14"
 edition = "2018"
 authors = ["wandercn<wander@rustpub.com>"]
 description = "AliPay Sdk for Rust"
@@ -14,12 +14,12 @@ categories = ["api-bindings", "accessibility", "development-tools", "compilers"]
 jsonmap = "0.1"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-gostd = "0.4.1"
+gostd = "0.4"
 sha2 = "0.10.2"
 base64 = "0.22.1"
 rsa = "0.6.1"
 uuid = { version = "1.0.0", features = ["v4", "fast-rng", "macro-diagnostics"] }
-serde_with = "1.14.0"
+serde_with = "3.12.0"
 log = "0.4"
 x509-parser = "0.17.0"
 md5 = "0.7.0"

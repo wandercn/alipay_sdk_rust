@@ -2,6 +2,7 @@
 // #![allow(unused)]
 
 use super::biz::BizContenter;
+use crate::error::AliPayResult;
 use gostd::builtin::len;
 use gostd::io::StringWriter;
 use gostd::strings;
@@ -30,43 +31,46 @@ pub fn get_out_trade_no() -> String {
     Uuid::new_v4().to_string()
 }
 
-pub fn build_form(base_url: &str, parameters: &mut HashMap<String, String>) -> String {
+pub fn build_form(
+    base_url: &str,
+    parameters: &mut HashMap<String, String>,
+) -> AliPayResult<String> {
     let mut buf = strings::Builder::new();
-    buf.WriteString("<form name=\"alipaysubmit\" method=\"post\" action=\"");
-    buf.WriteString(base_url);
-    buf.WriteString("?charset=utf-8");
-    buf.WriteString("\">\n");
-    buf.WriteString(&build_hidden_fields(parameters));
-    buf.WriteString("<input type=\"submit\" value=\"立即支付\" style=\"display:none\" >\n");
-    buf.WriteString("</form>\n");
-    buf.WriteString("<script>document.forms['alipaysubmit'].submit();</script>");
-    buf.String()
+    buf.WriteString("<form name=\"alipaysubmit\" method=\"post\" action=\"")?;
+    buf.WriteString(base_url)?;
+    buf.WriteString("?charset=utf-8")?;
+    buf.WriteString("\">\n")?;
+    buf.WriteString(&build_hidden_fields(parameters)?)?;
+    buf.WriteString("<input type=\"submit\" value=\"立即支付\" style=\"display:none\" >\n")?;
+    buf.WriteString("</form>\n")?;
+    buf.WriteString("<script>document.forms['alipaysubmit'].submit();</script>")?;
+    Ok(buf.String())
 }
 
-fn build_hidden_fields(parameters: &mut HashMap<String, String>) -> String {
+fn build_hidden_fields(parameters: &mut HashMap<String, String>) -> AliPayResult<String> {
     if parameters.is_empty() {
-        return "".to_string();
+        return Ok("".to_string());
     }
     let mut buf = strings::Builder::new();
     for (key, value) in parameters {
         if value.is_empty() {
             continue;
         }
-        buf.WriteString(&build_hidden_field(key, value));
+        buf.WriteString(&build_hidden_field(key, value)?)?;
     }
-    buf.String()
+    Ok(buf.String())
 }
 
-fn build_hidden_field(key: &str, value: &str) -> String {
+fn build_hidden_field(key: &str, value: &str) -> AliPayResult<String> {
     let mut buf = strings::Builder::new();
-    buf.WriteString("<input type=\"hidden\" name=\"");
-    buf.WriteString(key);
-    buf.WriteString("\" value=\"");
+    buf.WriteString("<input type=\"hidden\" name=\"")?;
+    buf.WriteString(key)?;
+    buf.WriteString("\" value=\"")?;
     // 转义双引号
     let a = strings::ReplaceAll(value, "\"", "&quot;");
-    buf.WriteString(&a);
-    buf.WriteString("\">\n");
-    buf.String()
+    buf.WriteString(&a)?;
+    buf.WriteString("\">\n")?;
+    Ok(buf.String())
 }
 
 // 只支持value是{}或[]或""包裹的key，不支持数字
@@ -91,7 +95,7 @@ pub fn json_get(result: &str, key: &str) -> String {
             if current == b'{' || current == b'[' {
                 left_brackets += 1;
             }
-            
+
             if (current == b']' || current == b'}') && left_brackets == 0 {
                 break;
             }
@@ -118,14 +122,13 @@ pub fn json_get(result: &str, key: &str) -> String {
 }
 
 use gostd::net::url;
-use std::io::Result;
 
 // 获取支付宝CallBack异步消息的待签名字符串和签名
 // 自行实现签名文档 https://opendocs.alipay.com/common/02mse7?pathHash=096e611e
 // 返回值 source - 签名字符串 , sign - 签名 , sign_type - 签名类型
-pub fn get_async_callback_msg_source(raw_body: &[u8]) -> Result<(String, String, String)> {
+pub fn get_async_callback_msg_source(raw_body: &[u8]) -> AliPayResult<(String, String, String)> {
     // 解析 URL 查询字符串
-    let raw_str = String::from_utf8_lossy(raw_body);
+    let raw_str = std::str::from_utf8(raw_body)?;
     let values = url::ParseQuery(&raw_str)?;
 
     let sign_type = values.Get("sign_type");
@@ -152,4 +155,20 @@ pub fn get_async_callback_msg_source(raw_body: &[u8]) -> Result<(String, String,
         .join("&");
 
     Ok((source, sign, sign_type))
+}
+
+use base64::{engine::general_purpose, DecodeError, Engine as _};
+
+pub fn base64_encode<T>(input: T) -> String
+where
+    T: AsRef<[u8]>,
+{
+    general_purpose::STANDARD.encode(input)
+}
+
+pub fn base64_decode<T>(input: T) -> Result<Vec<u8>, DecodeError>
+where
+    T: AsRef<[u8]>,
+{
+    general_purpose::STANDARD.decode(input)
 }

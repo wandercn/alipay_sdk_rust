@@ -481,7 +481,7 @@ impl PayClient {
             parameters.insert(k, v[0].to_string());
         }
 
-        let form = build_form(&self.api_url(), &mut parameters)
+        let form = build_form(&self.api_url(), &mut parameters)?
             .as_bytes()
             .to_vec();
         Ok(form)

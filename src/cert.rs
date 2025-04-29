@@ -8,6 +8,8 @@ use x509_parser::prelude::*;
 
 use log::debug;
 
+use crate::util::base64_encode;
+
 ///    get_cert_sn 获取证书序列号SN
 ///    cert_path：X.509证书文件路径(appCertPublicKey.crt、alipayCertPublicKey_RSA2.crt)
 ///    返回 sn：证书序列号(app_cert_sn、alipay_cert_sn)
@@ -100,7 +102,7 @@ pub fn get_public_key_with_path<'a>(alipay_cert_path: impl AsRef<str>) -> Result
     let cert_data = &fs::read(alipay_cert_path.as_ref())?;
     let cert = load_certificate(cert_data)?;
     match cert.parse_x509() {
-        Ok(certificate) => Ok(base64::encode(certificate.public_key().raw)),
+        Ok(certificate) => Ok(base64_encode(certificate.public_key().raw)),
         Err(err) => Err(Error::new(ErrorKind::Other, err.to_string())),
     }
 }

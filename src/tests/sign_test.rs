@@ -1,7 +1,7 @@
 use gostd::strings;
 
 use crate::sign::{builder, Signer};
-use anyhow::{Context, Result};
+use anyhow::Result;
 const PRIVATE_KEY_FILE: &str = "src/tests/ffactory.org_私钥.txt"; // 沙箱环境自定义测试密钥
 const PUBILC_KEY_FILE: &str = "src/tests/ffactory.org_公钥.txt"; // 沙箱环境自定义测试密钥
 const SOURCE_URL: &str = r#"alipay_root_cert_sn=687b59193f3f462dd5336e5abf83c5d8_02941eef3187dddf3d3b83462e1dfcf6&app_cert_sn=1aca24501cc5cd3ac19089ff49d99d63&app_id=2021000117650139&biz_content={"buyer_id":"2088102175953034","out_trade_no":"1620630871769533001","subject":"iPhone","timestamp":"2021-05-08 17:09:04","total_amount":"88.88"}&charset=utf-8&format=JSON&method=alipay.trade.create&sign_type=RSA2&timestamp=2021-05-12 17:18:09&version=1.0"#;
