@@ -16,9 +16,6 @@ impl BizContenter for TradeRoyaltyRelationUnBindBiz
         self.0.insert(key.to_string(), value.clone());
     }
 
-    fn set_array(&mut self, key: &str, value: Vec<JsonV<String>>) {
-        self.0.insert(key.to_string(), JsonV::from(value));
-    }
 }
 
 impl TradeRoyaltyRelationUnBindBiz {
@@ -35,6 +32,6 @@ impl TradeRoyaltyRelationUnBindBiz {
         self.set("biz_type", biz_type.into());
     }
     pub fn set_royalty_parameters(&mut self, receiver_list: Vec<AccountInfo>) {
-        self.set_array("receiver_list", receiver_list.iter().map(|receiver| receiver.clone().into_map()).collect::<Vec<JsonV<String>>>());
+        self.set("receiver_list", JsonV::Array(receiver_list.iter().map(|receiver| receiver.clone().into_map()).collect::<Vec<JsonV<String>>>()));
     }
 }

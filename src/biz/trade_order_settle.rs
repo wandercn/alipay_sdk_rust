@@ -51,10 +51,7 @@ impl BizContenter for TradeOrderSettleBiz
     fn set(&mut self, key: &str, value: V) {
         self.0.insert(key.to_string(), value.clone());
     }
-
-    fn set_array(&mut self, key: &str, value: Vec<JsonV<String>>) {
-        self.0.insert(key.to_string(), JsonV::from(value));
-    }
+    
 }
 
 // 以下是设置必选字段方法
@@ -74,7 +71,7 @@ impl TradeOrderSettleBiz
     }
     
     pub fn set_royalty_parameters(&mut self, value: Vec<RoyaltyParameter>) {
-        self.set_array("royalty_parameters", value.iter().map(|v| v.clone().into_map()).collect::<Vec<JsonV<String>>>());
+        self.set("royalty_parameters", JsonV::Array(value.iter().map(|v| v.clone().into_map()).collect::<Vec<JsonV<String>>>()));
     }
     
 }

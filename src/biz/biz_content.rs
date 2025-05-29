@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 pub trait BizContenter: Serialize {
     fn method(&self) -> String;
     fn set(&mut self, key: &str, value: JsonV<String>);
-    fn set_array(&mut self, key: &str, value: Vec<JsonV<String>>);
 }
 
 pub type BizObject = JsonMap<String>;

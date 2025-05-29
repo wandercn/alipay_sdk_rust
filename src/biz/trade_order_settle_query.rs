@@ -19,9 +19,6 @@ impl BizContenter for TradeOrderSettleQueryBiz
         self.0.insert(key.to_string(), value.clone());
     }
 
-    fn set_array(&mut self, key: &str, value: Vec<JsonV<String>>) {
-        self.0.insert(key.to_string(), JsonV::from(value));
-    }
 }
 
 impl TradeOrderSettleQueryBiz {
