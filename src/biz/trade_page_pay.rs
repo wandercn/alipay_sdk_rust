@@ -1,6 +1,6 @@
 #![allow(unused)]
 use std::hash::BuildHasher;
-
+use jsonmap::{JsonMap, JsonV};
 use super::{BizContenter, BizObject, V};
 use serde::{Deserialize, Serialize};
 
@@ -15,6 +15,7 @@ impl BizContenter for TradePagePayBiz {
     fn set(&mut self, key: &str, value: V) {
         self.0.insert(key.to_string(), value.clone());
     }
+
 }
 // 以下是设置必选字段方法
 impl TradePagePayBiz {
