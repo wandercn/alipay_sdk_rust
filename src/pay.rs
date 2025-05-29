@@ -17,17 +17,9 @@ use gostd::net::http;
 use gostd::net::url;
 use serde::{Deserialize, Serialize};
 
-use crate::biz::{
-    self, BizContenter, TradeAppPayBiz, TradeCancelBiz, TradeCloseBiz, TradeCreateBiz,
-    TradeFastpayRefundQueryBiz, TradePagePayBiz, TradePageRefundBiz, TradePayBiz,
-    TradePrecreateBiz, TradeQueryBiz, TradeRefundBiz, TradeWapPayBiz,
-};
+use crate::biz::{self, BizContenter, BizObject, TradeAppPayBiz, TradeCancelBiz, TradeCloseBiz, TradeCreateBiz, TradeFastpayRefundQueryBiz, TradeOrderSettleBiz, TradeOrderSettleQueryBiz, TradePagePayBiz, TradePageRefundBiz, TradePayBiz, TradePrecreateBiz, TradeQueryBiz, TradeRefundBiz, TradeRoyaltyRelationBindBiz, TradeRoyaltyRelationUnBindBiz, TradeWapPayBiz};
 use crate::request::{Request, Requester};
-use crate::response::{
-    self, TradeCancelResponse, TradeCloseResponse, TradeCreateResponse,
-    TradeFastpayRefundQueryResponse, TradePageRefundResponse, TradePayResponse,
-    TradePrecreateResponse, TradeQueryResponse, TradeRefundResponse,
-};
+use crate::response::{self, TradeCancelResponse, TradeCloseResponse, TradeCreateResponse, TradeFastpayRefundQueryResponse, TradeOrderSettleQueryResponse, TradeOrderSettleResponse, TradePageRefundResponse, TradePayResponse, TradePrecreateResponse, TradeQueryResponse, TradeRefundResponse, TradeRoyaltyRelationBindResponse, TradeRoyaltyRelationUnBindResponse};
 use crate::util::{self, build_form, json_get};
 pub trait Payer {
     fn trade_create(&self, biz_content: &TradeCreateBiz) -> AliPayResult<TradeCreateResponse>;
@@ -59,7 +51,15 @@ pub trait Payer {
         &self,
         biz_content: &TradeFastpayRefundQueryBiz,
     ) -> AliPayResult<TradeFastpayRefundQueryResponse>;
+    
+    fn trade_order_settle(&self, biz_content: &TradeOrderSettleBiz) -> AliPayResult<TradeOrderSettleResponse>;
 
+    fn trade_order_settle_query(&self, biz_content: &TradeOrderSettleQueryBiz) -> AliPayResult<TradeOrderSettleQueryResponse>;
+    
+    fn trade_royalty_relation_bind(&self, biz_content: &TradeRoyaltyRelationBindBiz) -> AliPayResult<TradeRoyaltyRelationBindResponse>;
+    
+    fn trade_royalty_relation_unbind(&self, biz_content: &TradeRoyaltyRelationUnBindBiz) -> AliPayResult<TradeRoyaltyRelationUnBindResponse>;
+    
     fn trade_close(&self, biz_content: &TradeCloseBiz) -> AliPayResult<TradeCloseResponse>;
     fn async_verify_sign(&self, raw_body: &[u8]) -> AliPayResult<bool>;
 }
@@ -278,6 +278,62 @@ impl Payer for PayClient {
                 "trade_fastpay_refund_query failed: {} code:{}",
                 res.response.sub_msg.unwrap().as_str(),
                 res.response.sub_code.unwrap().as_str()
+            )));
+        }
+        Ok(res)
+    }
+
+    fn trade_order_settle(&self, biz_content: &TradeOrderSettleBiz) -> AliPayResult<TradeOrderSettleResponse> {
+        let body = self.do_alipay(biz_content)?;
+        let res: TradeOrderSettleResponse = serde_json::from_slice(&body)?;
+        if res.response.code != Some("10000".to_string()) {
+            log::debug!("{}", serde_json::to_string(&res)?);
+            return Err(AliPayError(format!(
+                "trade_page_refund failed: {} code:{}",
+                res.response.sub_msg.unwrap().as_str(),
+                res.response.sub_code.unwrap().as_str()
+            )));
+        }
+        Ok(res)
+    }
+
+    fn trade_order_settle_query(&self, biz_content: &TradeOrderSettleQueryBiz) -> AliPayResult<TradeOrderSettleQueryResponse> {
+        let body = self.do_alipay(biz_content)?;
+        let res: TradeOrderSettleQueryResponse = serde_json::from_slice(&body)?;
+        if res.response.code != Some("10000".to_string()) {
+            log::debug!("{}", serde_json::to_string(&res)?);
+            return Err(AliPayError(format!(
+                "trade_page_refund failed: {} code:{}",
+                res.response.msg.unwrap().as_str(),
+                res.response.code.unwrap().as_str()
+            )));
+        }
+        Ok(res)
+    }
+
+    fn trade_royalty_relation_bind(&self, biz_content: &TradeRoyaltyRelationBindBiz) -> AliPayResult<TradeRoyaltyRelationBindResponse> {
+        let body = self.do_alipay(biz_content)?;
+        let res: TradeRoyaltyRelationBindResponse = serde_json::from_slice(&body)?;
+        if res.response.code != Some("10000".to_string()) {
+            log::debug!("{}", serde_json::to_string(&res)?);
+            return Err(AliPayError(format!(
+                "trade_page_refund failed: {} code:{}",
+                res.response.msg.unwrap().as_str(),
+                res.response.code.unwrap().as_str()
+            )));
+        }
+        Ok(res)
+    }
+
+    fn trade_royalty_relation_unbind(&self, biz_content: &TradeRoyaltyRelationUnBindBiz) -> AliPayResult<TradeRoyaltyRelationUnBindResponse> {
+        let body = self.do_alipay(biz_content)?;
+        let res: TradeRoyaltyRelationUnBindResponse = serde_json::from_slice(&body)?;
+        if res.response.code != Some("10000".to_string()) {
+            log::debug!("{}", serde_json::to_string(&res)?);
+            return Err(AliPayError(format!(
+                "trade_page_refund failed: {} code:{}",
+                res.response.msg.unwrap().as_str(),
+                res.response.code.unwrap().as_str()
             )));
         }
         Ok(res)

@@ -1,7 +1,6 @@
 //! 返回值结构体定义。
 use serde_with::skip_serializing_none;
 use std::collections::HashMap;
-
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
@@ -371,19 +370,19 @@ pub struct RefundRoyalty {
 #[derive(Serialize, Deserialize)]
 pub struct TradeOrderSettleResponse {
     #[serde(rename(deserialize = "alipay_trade_order_settle_response"))]
-    response: OrderSettleResponse,
-    alipay_cert_sn: Option<String>,
-    sign: Option<String>,
+    pub response: OrderSettleResponse,
+    pub alipay_cert_sn: Option<String>,
+    pub sign: Option<String>,
 }
 
 #[skip_serializing_none]
 #[derive(Serialize, Deserialize)]
-struct OrderSettleResponse {
-    code: Option<String>,
-    msg: Option<String>,
-    sub_code: Option<String>,
-    sub_msg: Option<String>,
-    trade_no: Option<String>,
+pub struct OrderSettleResponse {
+    pub code: Option<String>,
+    pub msg: Option<String>,
+    pub sub_code: Option<String>,
+    pub sub_msg: Option<String>,
+    pub trade_no: Option<String>,
 }
 
 //===================================================
@@ -568,4 +567,99 @@ struct AlipayUserCertifyOpenQueryResponse {
     passed: Option<Vec<String>>,
     identity_info: Option<String>,
     material_info: Option<String>,
+}
+
+
+#[skip_serializing_none]
+#[derive(Debug, Serialize, Deserialize)]
+pub struct RoyaltyDetail {
+    #[serde(rename = "operation_type")]
+    pub operation_type: String,
+
+    #[serde(rename = "execute_dt")]
+    pub execute_datetime: String,
+
+    #[serde(rename = "trans_out")]
+    pub transfer_out: String,
+
+    #[serde(rename = "trans_out_type")]
+    pub transfer_out_type: String,
+
+    #[serde(rename = "trans_out_open_id")]
+    pub transfer_out_open_id: String,
+
+    #[serde(rename = "trans_in")]
+    pub transfer_in: String,
+
+    #[serde(rename = "trans_in_open_id")]
+    pub transfer_in_open_id: String,
+
+    #[serde(rename = "trans_in_type")]
+    pub transfer_in_type: String,
+
+    #[serde(rename = "amount")]
+    pub amount: String,
+
+    #[serde(rename = "state")]
+    pub state: String,
+
+    #[serde(rename = "detail_id")]
+    pub detail_id: String,
+
+    #[serde(rename = "error_code")]
+    pub error_code: Option<String>,
+
+    #[serde(rename = "error_desc")]
+    pub error_description: Option<String>,
+}
+
+#[skip_serializing_none]
+#[derive(Serialize, Deserialize)]
+pub struct AlipayTradeOrderSettleQueryResponse {
+    pub code: Option<String>,
+    pub msg: Option<String>,
+    pub out_request_no: Option<String>,
+    pub operation_dt: Option<String>,
+    pub royalty_detail_list: Vec<RoyaltyDetail>,
+}
+
+#[skip_serializing_none]
+#[derive(Serialize, Deserialize)]
+pub struct TradeOrderSettleQueryResponse {
+    #[serde(rename(deserialize = "alipay_trade_order_settle_query_response"))]
+    pub response: AlipayTradeOrderSettleQueryResponse,
+    pub sign: String,
+}
+
+
+#[skip_serializing_none]
+#[derive(Serialize, Deserialize)]
+pub struct AlipayTraderRoyaltyRelationBindResponse {
+    pub code: Option<String>,
+    pub msg: Option<String>,
+    pub result_code: Option<String>,
+}
+
+#[skip_serializing_none]
+#[derive(Serialize, Deserialize)]
+pub struct TradeRoyaltyRelationBindResponse {
+    #[serde(rename(deserialize = "alipay_trade_royalty_relation_bind_response"))]
+    pub response: AlipayTraderRoyaltyRelationBindResponse,
+    pub sign: String,
+}
+
+#[skip_serializing_none]
+#[derive(Serialize, Deserialize)]
+pub struct AlipayTraderRoyaltyRelationUnBindResponse {
+    pub code: Option<String>,
+    pub msg: Option<String>,
+    pub result_code: Option<String>,
+}
+
+#[skip_serializing_none]
+#[derive(Serialize, Deserialize)]
+pub struct TradeRoyaltyRelationUnBindResponse {
+    #[serde(rename(deserialize = "alipay_trade_royalty_relation_unbind_response"))]
+    pub response: AlipayTraderRoyaltyRelationUnBindResponse,
+    pub sign: String,
 }

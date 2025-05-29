@@ -27,3 +27,14 @@ mod trade_refund;
 pub use trade_refund::*;
 mod trade_wap_pay;
 pub use trade_wap_pay::*;
+mod trade_order_settle;
+pub use trade_order_settle::*;
+mod trade_order_settle_query;
+pub use trade_order_settle_query::*;
+mod trade_royalty_relation_bind;
+pub use trade_royalty_relation_bind::*;
+
+mod trade_royalty_relation_unbind;
+pub use trade_royalty_relation_unbind::*;
+
+

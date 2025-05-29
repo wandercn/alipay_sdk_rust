@@ -1,6 +1,5 @@
 use core::hash;
 use std::{clone, hash::Hash};
-
 use gostd::strings;
 use jsonmap::{JsonMap, JsonV};
 use serde::{Deserialize, Serialize};
@@ -8,6 +7,7 @@ use serde::{Deserialize, Serialize};
 pub trait BizContenter: Serialize {
     fn method(&self) -> String;
     fn set(&mut self, key: &str, value: JsonV<String>);
+    fn set_array(&mut self, key: &str, value: Vec<JsonV<String>>);
 }
 
 pub type BizObject = JsonMap<String>;

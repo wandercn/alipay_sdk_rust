@@ -1,7 +1,7 @@
 #![allow(unused)]
 use std::hash::BuildHasher;
-
-use super::{BizContenter, BizObject,V};
+use jsonmap::{JsonMap, JsonV};
+use super::{BizContenter, BizObject, V};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Default)]
@@ -16,6 +16,10 @@ impl BizContenter for TradeAppPayBiz
     // 设置可选字段方法
     fn set(&mut self, key: &str, value: V) {
         self.0.insert(key.to_string(), value.clone());
+    }
+
+    fn set_array(&mut self, key: &str, value: Vec<JsonV<String>>) {
+        todo!()
     }
 }
 
