@@ -17,9 +17,19 @@ use gostd::net::http;
 use gostd::net::url;
 use serde::{Deserialize, Serialize};
 
-use crate::biz::{self, BizContenter, BizObject, TradeAppPayBiz, TradeCancelBiz, TradeCloseBiz, TradeCreateBiz, TradeFastpayRefundQueryBiz, TradeOrderSettleBiz, TradeOrderSettleQueryBiz, TradePagePayBiz, TradePageRefundBiz, TradePayBiz, TradePrecreateBiz, TradeQueryBiz, TradeRefundBiz, TradeRoyaltyRelationBindBiz, TradeRoyaltyRelationUnBindBiz, TradeWapPayBiz};
+use crate::biz::{
+    self, BizContenter, BizObject, TradeAppPayBiz, TradeCancelBiz, TradeCloseBiz, TradeCreateBiz,
+    TradeFastpayRefundQueryBiz, TradeOrderSettleBiz, TradeOrderSettleQueryBiz, TradePagePayBiz,
+    TradePageRefundBiz, TradePayBiz, TradePrecreateBiz, TradeQueryBiz, TradeRefundBiz,
+    TradeRoyaltyRelationBindBiz, TradeRoyaltyRelationUnBindBiz, TradeWapPayBiz,
+};
 use crate::request::{Request, Requester};
-use crate::response::{self, TradeCancelResponse, TradeCloseResponse, TradeCreateResponse, TradeFastpayRefundQueryResponse, TradeOrderSettleQueryResponse, TradeOrderSettleResponse, TradePageRefundResponse, TradePayResponse, TradePrecreateResponse, TradeQueryResponse, TradeRefundResponse, TradeRoyaltyRelationBindResponse, TradeRoyaltyRelationUnBindResponse};
+use crate::response::{
+    self, TradeCancelResponse, TradeCloseResponse, TradeCreateResponse,
+    TradeFastpayRefundQueryResponse, TradeOrderSettleQueryResponse, TradeOrderSettleResponse,
+    TradePageRefundResponse, TradePayResponse, TradePrecreateResponse, TradeQueryResponse,
+    TradeRefundResponse, TradeRoyaltyRelationBindResponse, TradeRoyaltyRelationUnBindResponse,
+};
 use crate::util::{self, build_form, json_get};
 pub trait Payer {
     fn trade_create(&self, biz_content: &TradeCreateBiz) -> AliPayResult<TradeCreateResponse>;
@@ -51,15 +61,27 @@ pub trait Payer {
         &self,
         biz_content: &TradeFastpayRefundQueryBiz,
     ) -> AliPayResult<TradeFastpayRefundQueryResponse>;
-    
-    fn trade_order_settle(&self, biz_content: &TradeOrderSettleBiz) -> AliPayResult<TradeOrderSettleResponse>;
 
-    fn trade_order_settle_query(&self, biz_content: &TradeOrderSettleQueryBiz) -> AliPayResult<TradeOrderSettleQueryResponse>;
-    
-    fn trade_royalty_relation_bind(&self, biz_content: &TradeRoyaltyRelationBindBiz) -> AliPayResult<TradeRoyaltyRelationBindResponse>;
-    
-    fn trade_royalty_relation_unbind(&self, biz_content: &TradeRoyaltyRelationUnBindBiz) -> AliPayResult<TradeRoyaltyRelationUnBindResponse>;
-    
+    fn trade_order_settle(
+        &self,
+        biz_content: &TradeOrderSettleBiz,
+    ) -> AliPayResult<TradeOrderSettleResponse>;
+
+    fn trade_order_settle_query(
+        &self,
+        biz_content: &TradeOrderSettleQueryBiz,
+    ) -> AliPayResult<TradeOrderSettleQueryResponse>;
+
+    fn trade_royalty_relation_bind(
+        &self,
+        biz_content: &TradeRoyaltyRelationBindBiz,
+    ) -> AliPayResult<TradeRoyaltyRelationBindResponse>;
+
+    fn trade_royalty_relation_unbind(
+        &self,
+        biz_content: &TradeRoyaltyRelationUnBindBiz,
+    ) -> AliPayResult<TradeRoyaltyRelationUnBindResponse>;
+
     fn trade_close(&self, biz_content: &TradeCloseBiz) -> AliPayResult<TradeCloseResponse>;
     fn async_verify_sign(&self, raw_body: &[u8]) -> AliPayResult<bool>;
 }
@@ -283,13 +305,19 @@ impl Payer for PayClient {
         Ok(res)
     }
 
-    fn trade_order_settle(&self, biz_content: &TradeOrderSettleBiz) -> AliPayResult<TradeOrderSettleResponse> {
+    /// <https://opendocs.alipay.com/open/c3b24498_alipay.trade.order.settle?pathHash=8790ac59&scene=common>
+    ///
+    /// alipay.trade.order.settle(统一收单交易结算接口) 用于在卖家交易成功之后，基于交易订单，进行卖家与第三方（如供应商或平台商）的资金再分配。一般用于第三方从卖家抽佣场景。
+    fn trade_order_settle(
+        &self,
+        biz_content: &TradeOrderSettleBiz,
+    ) -> AliPayResult<TradeOrderSettleResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeOrderSettleResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
             log::debug!("{}", serde_json::to_string(&res)?);
             return Err(AliPayError(format!(
-                "trade_page_refund failed: {} code:{}",
+                "trade_order_settle failed: {} code:{}",
                 res.response.sub_msg.unwrap().as_str(),
                 res.response.sub_code.unwrap().as_str()
             )));
@@ -297,13 +325,19 @@ impl Payer for PayClient {
         Ok(res)
     }
 
-    fn trade_order_settle_query(&self, biz_content: &TradeOrderSettleQueryBiz) -> AliPayResult<TradeOrderSettleQueryResponse> {
+    /// <https://opendocs.alipay.com/open/9ef980b7_alipay.trade.order.settle.query?pathHash=131bacfc&scene=common>
+    ///
+    /// alipay.trade.order.settle.query(交易分账查询接口) 根据分账请求号查询交易分账结果
+    fn trade_order_settle_query(
+        &self,
+        biz_content: &TradeOrderSettleQueryBiz,
+    ) -> AliPayResult<TradeOrderSettleQueryResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeOrderSettleQueryResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
             log::debug!("{}", serde_json::to_string(&res)?);
             return Err(AliPayError(format!(
-                "trade_page_refund failed: {} code:{}",
+                "trade_order_settle_query failed: {} code:{}",
                 res.response.msg.unwrap().as_str(),
                 res.response.code.unwrap().as_str()
             )));
@@ -311,13 +345,19 @@ impl Payer for PayClient {
         Ok(res)
     }
 
-    fn trade_royalty_relation_bind(&self, biz_content: &TradeRoyaltyRelationBindBiz) -> AliPayResult<TradeRoyaltyRelationBindResponse> {
+    /// <https://opendocs.alipay.com/open/c21931d6_alipay.trade.royalty.relation.bind?pathHash=08a24dae&scene=common>
+    ///
+    /// alipay.trade.royalty.relation.bind(分账关系绑定)当商户签约分账产品后，授权ISV帮其进行分账关系的维护。本接口用于商户与分账方的关系绑定。
+    fn trade_royalty_relation_bind(
+        &self,
+        biz_content: &TradeRoyaltyRelationBindBiz,
+    ) -> AliPayResult<TradeRoyaltyRelationBindResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeRoyaltyRelationBindResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
             log::debug!("{}", serde_json::to_string(&res)?);
             return Err(AliPayError(format!(
-                "trade_page_refund failed: {} code:{}",
+                "trade_royalty_relation_bind failed: {} code:{}",
                 res.response.msg.unwrap().as_str(),
                 res.response.code.unwrap().as_str()
             )));
@@ -325,13 +365,19 @@ impl Payer for PayClient {
         Ok(res)
     }
 
-    fn trade_royalty_relation_unbind(&self, biz_content: &TradeRoyaltyRelationUnBindBiz) -> AliPayResult<TradeRoyaltyRelationUnBindResponse> {
+    /// <https://opendocs.alipay.com/open/3613f4e1_alipay.trade.royalty.relation.unbind?pathHash=2cbd3197&scene=common>
+    ///
+    /// alipay.trade.royalty.relation.unbind(分账关系解绑)当商户签约分账产品后，授权ISV帮其进行分账关系的维护。本接口用于商户与分账方的关系解绑。
+    fn trade_royalty_relation_unbind(
+        &self,
+        biz_content: &TradeRoyaltyRelationUnBindBiz,
+    ) -> AliPayResult<TradeRoyaltyRelationUnBindResponse> {
         let body = self.do_alipay(biz_content)?;
         let res: TradeRoyaltyRelationUnBindResponse = serde_json::from_slice(&body)?;
         if res.response.code != Some("10000".to_string()) {
             log::debug!("{}", serde_json::to_string(&res)?);
             return Err(AliPayError(format!(
-                "trade_page_refund failed: {} code:{}",
+                "trade_royalty_relation_unbind failed: {} code:{}",
                 res.response.msg.unwrap().as_str(),
                 res.response.code.unwrap().as_str()
             )));

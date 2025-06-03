@@ -16,6 +16,7 @@ Cargo.lock
 /Cargo.lock
 .idea/workspace.xml
 .idea/vcs.xml
+.idea/*
 cjlintignore.cfg
 .DS_Store
 .vscode/settings.json
