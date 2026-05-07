@@ -23,12 +23,24 @@ use crate::biz::{
     TradePageRefundBiz, TradePayBiz, TradePrecreateBiz, TradeQueryBiz, TradeRefundBiz,
     TradeRoyaltyRelationBindBiz, TradeRoyaltyRelationUnBindBiz, TradeWapPayBiz,
 };
+use crate::biz_v3::{
+    BizContenterV3, TradeAppPayV3Biz, TradeCancelV3Biz, TradeCloseV3Biz, TradeCreateV3Biz,
+    TradeFastpayRefundQueryV3Biz, TradeOrderSettleQueryV3Biz, TradeOrderSettleV3Biz,
+    TradePagePayV3Biz, TradePayV3Biz, TradePrecreateV3Biz, TradeQueryV3Biz, TradeRefundV3Biz,
+    TradeRoyaltyRelationBindV3Biz, TradeRoyaltyRelationUnbindV3Biz, TradeWapPayV3Biz,
+};
 use crate::request::{Request, Requester};
 use crate::response::{
     self, TradeCancelResponse, TradeCloseResponse, TradeCreateResponse,
     TradeFastpayRefundQueryResponse, TradeOrderSettleQueryResponse, TradeOrderSettleResponse,
     TradePageRefundResponse, TradePayResponse, TradePrecreateResponse, TradeQueryResponse,
     TradeRefundResponse, TradeRoyaltyRelationBindResponse, TradeRoyaltyRelationUnBindResponse,
+};
+use crate::response_v3::{
+    TradeCancelV3Response, TradeCloseV3Response, TradeCreateV3Response,
+    TradeFastpayRefundQueryV3Response, TradeOrderSettleQueryV3Response, TradeOrderSettleV3Response,
+    TradePayV3Response, TradePrecreateV3Response, TradeQueryV3Response, TradeRefundV3Response,
+    TradeRoyaltyRelationBindV3Response, TradeRoyaltyRelationUnbindV3Response,
 };
 use crate::util::{self, build_form, json_get};
 pub trait Payer {
@@ -84,6 +96,42 @@ pub trait Payer {
 
     fn trade_close(&self, biz_content: &TradeCloseBiz) -> AliPayResult<TradeCloseResponse>;
     fn async_verify_sign(&self, raw_body: &[u8]) -> AliPayResult<bool>;
+
+    // V3 APIs
+    fn trade_create_v3(&self, biz_content: &TradeCreateV3Biz) -> AliPayResult<TradeCreateV3Response>;
+    fn trade_pay_v3(&self, biz_content: &TradePayV3Biz) -> AliPayResult<TradePayV3Response>;
+    fn trade_precreate_v3(
+        &self,
+        biz_content: &TradePrecreateV3Biz,
+    ) -> AliPayResult<TradePrecreateV3Response>;
+    fn trade_query_v3(&self, biz_content: &TradeQueryV3Biz) -> AliPayResult<TradeQueryV3Response>;
+    fn trade_cancel_v3(&self, biz_content: &TradeCancelV3Biz) -> AliPayResult<TradeCancelV3Response>;
+    fn trade_refund_v3(&self, biz_content: &TradeRefundV3Biz) -> AliPayResult<TradeRefundV3Response>;
+    fn trade_close_v3(&self, biz_content: &TradeCloseV3Biz) -> AliPayResult<TradeCloseV3Response>;
+    fn trade_fastpay_refund_query_v3(
+        &self,
+        biz_content: &TradeFastpayRefundQueryV3Biz,
+    ) -> AliPayResult<TradeFastpayRefundQueryV3Response>;
+
+    fn trade_app_pay_v3(&self, biz_content: &TradeAppPayV3Biz) -> AliPayResult<TradePayV3Response>;
+    fn trade_wap_pay_v3(&self, biz_content: &TradeWapPayV3Biz) -> AliPayResult<TradePayV3Response>;
+    fn trade_page_pay_v3(&self, biz_content: &TradePagePayV3Biz) -> AliPayResult<TradePayV3Response>;
+    fn trade_order_settle_v3(
+        &self,
+        biz_content: &TradeOrderSettleV3Biz,
+    ) -> AliPayResult<TradeOrderSettleV3Response>;
+    fn trade_order_settle_query_v3(
+        &self,
+        biz_content: &TradeOrderSettleQueryV3Biz,
+    ) -> AliPayResult<TradeOrderSettleQueryV3Response>;
+    fn trade_royalty_relation_bind_v3(
+        &self,
+        biz_content: &TradeRoyaltyRelationBindV3Biz,
+    ) -> AliPayResult<TradeRoyaltyRelationBindV3Response>;
+    fn trade_royalty_relation_unbind_v3(
+        &self,
+        biz_content: &TradeRoyaltyRelationUnbindV3Biz,
+    ) -> AliPayResult<TradeRoyaltyRelationUnbindV3Response>;
 }
 
 /// 实现Payer接口的各种方法
@@ -410,6 +458,234 @@ impl Payer for PayClient {
         singer.set_public_key(&self.alipay_public_key())?;
         return Ok(singer.verify(&source, &sign)?);
     }
+
+    fn trade_create_v3(&self, biz_content: &TradeCreateV3Biz) -> AliPayResult<TradeCreateV3Response> {
+        let body = serde_json::to_string(biz_content)?;
+        let res = self.execute_v3("POST", &biz_content.path(), &body, "")?;
+        let resp: TradeCreateV3Response = serde_json::from_slice(&res)?;
+        if resp.code != "10000" {
+            return Err(AliPayError(format!(
+                "trade_create_v3 failed: {} code:{}",
+                resp.sub_msg.unwrap_or_default(),
+                resp.sub_code.unwrap_or_default()
+            )));
+        }
+        Ok(resp)
+    }
+
+    fn trade_pay_v3(&self, biz_content: &TradePayV3Biz) -> AliPayResult<TradePayV3Response> {
+        let body = serde_json::to_string(biz_content)?;
+        let res = self.execute_v3("POST", &biz_content.path(), &body, "")?;
+        let resp: TradePayV3Response = serde_json::from_slice(&res)?;
+        if resp.code != "10000" {
+            return Err(AliPayError(format!(
+                "trade_pay_v3 failed: {} code:{}",
+                resp.sub_msg.unwrap_or_default(),
+                resp.sub_code.unwrap_or_default()
+            )));
+        }
+        Ok(resp)
+    }
+
+    fn trade_precreate_v3(
+        &self,
+        biz_content: &TradePrecreateV3Biz,
+    ) -> AliPayResult<TradePrecreateV3Response> {
+        let body = serde_json::to_string(biz_content)?;
+        let res = self.execute_v3("POST", &biz_content.path(), &body, "")?;
+        let resp: TradePrecreateV3Response = serde_json::from_slice(&res)?;
+        if resp.code != "10000" {
+            return Err(AliPayError(format!(
+                "trade_precreate_v3 failed: {} code:{}",
+                resp.sub_msg.unwrap_or_default(),
+                resp.sub_code.unwrap_or_default()
+            )));
+        }
+        Ok(resp)
+    }
+
+    fn trade_query_v3(&self, biz_content: &TradeQueryV3Biz) -> AliPayResult<TradeQueryV3Response> {
+        let body = serde_json::to_string(biz_content)?;
+        let res = self.execute_v3("POST", &biz_content.path(), &body, "")?;
+        let resp: TradeQueryV3Response = serde_json::from_slice(&res)?;
+        if resp.code != "10000" {
+            return Err(AliPayError(format!(
+                "trade_query_v3 failed: {} code:{}",
+                resp.sub_msg.unwrap_or_default(),
+                resp.sub_code.unwrap_or_default()
+            )));
+        }
+        Ok(resp)
+    }
+
+    fn trade_cancel_v3(&self, biz_content: &TradeCancelV3Biz) -> AliPayResult<TradeCancelV3Response> {
+        let body = serde_json::to_string(biz_content)?;
+        let res = self.execute_v3("POST", &biz_content.path(), &body, "")?;
+        let resp: TradeCancelV3Response = serde_json::from_slice(&res)?;
+        if resp.code != "10000" {
+            return Err(AliPayError(format!(
+                "trade_cancel_v3 failed: {} code:{}",
+                resp.sub_msg.unwrap_or_default(),
+                resp.sub_code.unwrap_or_default()
+            )));
+        }
+        Ok(resp)
+    }
+
+    fn trade_refund_v3(&self, biz_content: &TradeRefundV3Biz) -> AliPayResult<TradeRefundV3Response> {
+        let body = serde_json::to_string(biz_content)?;
+        let res = self.execute_v3("POST", &biz_content.path(), &body, "")?;
+        let resp: TradeRefundV3Response = serde_json::from_slice(&res)?;
+        if resp.code != "10000" {
+            return Err(AliPayError(format!(
+                "trade_refund_v3 failed: {} code:{}",
+                resp.sub_msg.unwrap_or_default(),
+                resp.sub_code.unwrap_or_default()
+            )));
+        }
+        Ok(resp)
+    }
+
+    fn trade_close_v3(&self, biz_content: &TradeCloseV3Biz) -> AliPayResult<TradeCloseV3Response> {
+        let body = serde_json::to_string(biz_content)?;
+        let res = self.execute_v3("POST", &biz_content.path(), &body, "")?;
+        let resp: TradeCloseV3Response = serde_json::from_slice(&res)?;
+        if resp.code != "10000" {
+            return Err(AliPayError(format!(
+                "trade_close_v3 failed: {} code:{}",
+                resp.sub_msg.unwrap_or_default(),
+                resp.sub_code.unwrap_or_default()
+            )));
+        }
+        Ok(resp)
+    }
+
+    fn trade_fastpay_refund_query_v3(
+        &self,
+        biz_content: &TradeFastpayRefundQueryV3Biz,
+    ) -> AliPayResult<TradeFastpayRefundQueryV3Response> {
+        let body = serde_json::to_string(biz_content)?;
+        let res = self.execute_v3("POST", &biz_content.path(), &body, "")?;
+        let resp: TradeFastpayRefundQueryV3Response = serde_json::from_slice(&res)?;
+        if resp.code != "10000" {
+            return Err(AliPayError(format!(
+                "trade_fastpay_refund_query_v3 failed: {} code:{}",
+                resp.sub_msg.unwrap_or_default(),
+                resp.sub_code.unwrap_or_default()
+            )));
+        }
+        Ok(resp)
+    }
+
+    fn trade_app_pay_v3(&self, biz_content: &TradeAppPayV3Biz) -> AliPayResult<TradePayV3Response> {
+        let body = serde_json::to_string(biz_content)?;
+        let res = self.execute_v3("POST", &biz_content.path(), &body, "")?;
+        let resp: TradePayV3Response = serde_json::from_slice(&res)?;
+        if resp.code != "10000" {
+            return Err(AliPayError(format!(
+                "trade_app_pay_v3 failed: {} code:{}",
+                resp.sub_msg.unwrap_or_default(),
+                resp.sub_code.unwrap_or_default()
+            )));
+        }
+        Ok(resp)
+    }
+
+    fn trade_wap_pay_v3(&self, biz_content: &TradeWapPayV3Biz) -> AliPayResult<TradePayV3Response> {
+        let body = serde_json::to_string(biz_content)?;
+        let res = self.execute_v3("POST", &biz_content.path(), &body, "")?;
+        let resp: TradePayV3Response = serde_json::from_slice(&res)?;
+        if resp.code != "10000" {
+            return Err(AliPayError(format!(
+                "trade_wap_pay_v3 failed: {} code:{}",
+                resp.sub_msg.unwrap_or_default(),
+                resp.sub_code.unwrap_or_default()
+            )));
+        }
+        Ok(resp)
+    }
+
+    fn trade_page_pay_v3(&self, biz_content: &TradePagePayV3Biz) -> AliPayResult<TradePayV3Response> {
+        let body = serde_json::to_string(biz_content)?;
+        let res = self.execute_v3("POST", &biz_content.path(), &body, "")?;
+        let resp: TradePayV3Response = serde_json::from_slice(&res)?;
+        if resp.code != "10000" {
+            return Err(AliPayError(format!(
+                "trade_page_pay_v3 failed: {} code:{}",
+                resp.sub_msg.unwrap_or_default(),
+                resp.sub_code.unwrap_or_default()
+            )));
+        }
+        Ok(resp)
+    }
+
+    fn trade_order_settle_v3(
+        &self,
+        biz_content: &TradeOrderSettleV3Biz,
+    ) -> AliPayResult<TradeOrderSettleV3Response> {
+        let body = serde_json::to_string(biz_content)?;
+        let res = self.execute_v3("POST", &biz_content.path(), &body, "")?;
+        let resp: TradeOrderSettleV3Response = serde_json::from_slice(&res)?;
+        if resp.code != "10000" {
+            return Err(AliPayError(format!(
+                "trade_order_settle_v3 failed: {} code:{}",
+                resp.sub_msg.unwrap_or_default(),
+                resp.sub_code.unwrap_or_default()
+            )));
+        }
+        Ok(resp)
+    }
+
+    fn trade_order_settle_query_v3(
+        &self,
+        biz_content: &TradeOrderSettleQueryV3Biz,
+    ) -> AliPayResult<TradeOrderSettleQueryV3Response> {
+        let body = serde_json::to_string(biz_content)?;
+        let res = self.execute_v3("POST", &biz_content.path(), &body, "")?;
+        let resp: TradeOrderSettleQueryV3Response = serde_json::from_slice(&res)?;
+        if resp.code != "10000" {
+            return Err(AliPayError(format!(
+                "trade_order_settle_query_v3 failed: {} code:{}",
+                resp.sub_msg.unwrap_or_default(),
+                resp.sub_code.unwrap_or_default()
+            )));
+        }
+        Ok(resp)
+    }
+
+    fn trade_royalty_relation_bind_v3(
+        &self,
+        biz_content: &TradeRoyaltyRelationBindV3Biz,
+    ) -> AliPayResult<TradeRoyaltyRelationBindV3Response> {
+        let body = serde_json::to_string(biz_content)?;
+        let res = self.execute_v3("POST", &biz_content.path(), &body, "")?;
+        let resp: TradeRoyaltyRelationBindV3Response = serde_json::from_slice(&res)?;
+        if resp.code != "10000" {
+            return Err(AliPayError(format!(
+                "trade_royalty_relation_bind_v3 failed: {} code:{}",
+                resp.sub_msg.unwrap_or_default(),
+                resp.sub_code.unwrap_or_default()
+            )));
+        }
+        Ok(resp)
+    }
+
+    fn trade_royalty_relation_unbind_v3(
+        &self,
+        biz_content: &TradeRoyaltyRelationUnbindV3Biz,
+    ) -> AliPayResult<TradeRoyaltyRelationUnbindV3Response> {
+        let body = serde_json::to_string(biz_content)?;
+        let res = self.execute_v3("POST", &biz_content.path(), &body, "")?;
+        let resp: TradeRoyaltyRelationUnbindV3Response = serde_json::from_slice(&res)?;
+        if resp.code != "10000" {
+            return Err(AliPayError(format!(
+                "trade_royalty_relation_unbind_v3 failed: {} code:{}",
+                resp.sub_msg.unwrap_or_default(),
+                resp.sub_code.unwrap_or_default()
+            )));
+        }
+        Ok(resp)
+    }
 }
 
 /// 构造器
@@ -529,6 +805,50 @@ impl PayClient {
             None => Err(AliPaySDKError::AliPayError("body is NONE".to_string())),
         }
     }
+    pub fn execute_v3(
+        &self,
+        method: &str,
+        path: &str,
+        body: &str,
+        app_auth_token: &str,
+    ) -> AliPayResult<Vec<byte>> {
+        let timestamp = gostd::time::Now().UnixNano() / 1_000_000;
+        let timestamp_str = timestamp.to_string();
+        let nonce_str = uuid::Uuid::new_v4().to_string().replace("-", "");
+
+        let sign_content =
+            util::build_v3_sign_content(method, path, body, app_auth_token, &timestamp_str);
+        let mut signer = builder().set_sign_type("RSA2").build();
+        signer.set_private_key(&self.private_key())?;
+        let sign = signer.sign(&sign_content)?;
+
+        let authorization =
+            util::build_v3_authorization(&self.app_id(), &nonce_str, &timestamp_str, &sign);
+
+        let mut client = http::Client::New();
+        let base_url = if self.api_url.ends_with("/gateway.do") {
+            self.api_url.replace("/gateway.do", "")
+        } else {
+            self.api_url.clone()
+        };
+        let url = format!("{}{}", base_url, path);
+        let mut request = if method == "GET" {
+            http::Request::New(http::Method::Get, &url, None)?
+        } else {
+            http::Request::New(http::Method::Post, &url, Some(body.as_bytes().to_vec().into()))?
+        };
+
+        request.Header.Set("Content-Type", "application/json");
+        request.Header.Set("Authorization", &authorization);
+        request.Header.Set("alipay-sdk-type", "custom");
+
+        let res = client.Do(request.borrow_mut())?;
+        match res.Body {
+            Some(body) => Ok(body.into()),
+            None => Err(AliPaySDKError::AliPayError("body is NONE".to_string())),
+        }
+    }
+
     /// 该方法对返回结果自带同步验签
     pub fn do_alipay(&self, biz_content: &impl BizContenter) -> AliPayResult<Vec<byte>> {
         // 同步验签

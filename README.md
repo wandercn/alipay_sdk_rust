@@ -23,12 +23,14 @@
  - [x] 适配最新的沙箱环境测试 版本：v1.0.5
  - [x] async_verify_sign 增加了异步通知验签函数 版本：v1.0.8
  - [x] 增加了自定义错误进行错误处理 版本：v1.0.8 
- 
+ - [x] 支持支付宝 V3 签名机制及完整 API 体系 版本：v1.0.16
+ - [x] 支持 PKCS8 格式私钥自动识别加载 版本：v1.0.16
+
  # Example
  ## apidoc
  <https://opendocs.alipay.com/apis/api_1/alipay.trade.create>
 
- ## alipay.trade.create(统一收单交易创建接口)
+ ## alipay.trade.create(统一收单交易创建接口 - V1/V2 版本)
 
  注意：开发环境使用沙箱环境下的CSR公钥证书配置调试代码,生产环境需要切换正式申请的公钥证书配置。沙箱环境配置参考<https://opendocs.alipay.com/common/02kkv7>
  
@@ -69,6 +71,35 @@ fn new_pay_client() -> Result<impl Payer> {
  .version_1_0()
  .build()?;
     Ok(client)
+}
+ ```
+
+ ## 统一收单交易支付 (alipay.trade.pay - V3 版本)
+
+ 支付宝 V3 接口采用 RESTful 风格，数据交互全面转向 JSON，签名放置在 HTTP Header 中。SDK 已自动处理加签、请求头封装以及网关地址适配（自动兼容 V2 的 `gateway.do` 地址并转换为 V3 格式）。
+
+ ```rust
+use alipay_sdk_rust::biz_v3::{self, BizContenterV3};
+use alipay_sdk_rust::pay::{PayClient, Payer};
+use std::io::Result;
+
+fn main() -> Result<()> {
+    // 初始化 client (与 V1/V2 相同)
+    let client = new_pay_client()?;
+
+    // 构造 V3 业务参数
+    let mut biz_content = biz_v3::TradePayV3Biz::new();
+    biz_content.set_out_trade_no("V3_ORDER_123456".into());
+    biz_content.set_total_amount("10.00".into());
+    biz_content.set_subject("V3 测试订单".into());
+    biz_content.set_scene("bar_code".into());
+    biz_content.set_auth_code("28763443825664394".into());
+
+    // 调用 V3 接口
+    let res = client.trade_pay_v3(&biz_content)?;
+    println!("V3 Response: {:?}", res);
+    
+    Ok(())
 }
  ```
 

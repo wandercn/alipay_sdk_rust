@@ -64,11 +64,13 @@
 //! {"response":{"code":"10000","msg":"Success","trade_no":"2024070822001497370503230532","out_trade_no":"1720424278524805000"},"sign":"YJ38ophTFhnNdEmfFUpWxuZ1Y3b11s8UoJ5Zh8iiIt2/YwqBnHOGsiM2SgY2vkTtrsuZPan1idU88w0knEntX8iMZLXVx1osY39JqfKEvRsOXjTa4JebhtVhkhJZQE57SgOMxKMNoCixbi734G+HgbzidjWGv1IfVBQUdz5qgOi48Fu7Tt0AY3I4lHiXw9eHe8TO9FFiY1p6sIUUMXufaZzvU5px3u6345MBikQF30pjX6dLYSkstsCEINU06oz3dQ/TW3iuwSLV0Do0Mqy7+/Bfde/oEhDnbGIvoUCJT+jfqdEYGUR3Ped6Ydr7sZRV7UsKSZ16YVuIHJ8S28GiEA==","alipay_cert_sn":"71d5f5ab5fa06fcad86b56c0c5888217"}
 //! `
 pub mod biz;
+pub mod biz_v3;
 pub mod cert;
 pub mod error;
 pub mod pay;
 pub mod request;
 pub mod response;
+pub mod response_v3;
 pub mod sign;
 #[cfg(test)]
 mod tests;

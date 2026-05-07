@@ -172,3 +172,30 @@ where
 {
     general_purpose::STANDARD.decode(input)
 }
+
+/// 构造 V3 待签名字符串
+pub fn build_v3_sign_content(
+    method: &str,
+    url: &str,
+    body: &str,
+    app_auth_token: &str,
+    timestamp: &str,
+) -> String {
+    format!(
+        "{}\n{}\n{}\n{}\n{}\n",
+        method, url, body, app_auth_token, timestamp
+    )
+}
+
+/// 构造 V3 Authorization 请求头
+pub fn build_v3_authorization(
+    app_id: &str,
+    nonce_str: &str,
+    timestamp: &str,
+    sign: &str,
+) -> String {
+    format!(
+        "ALIPAY-SHA256withRSA app_id={},nonce_str={},timestamp={},sign={}",
+        app_id, nonce_str, timestamp, sign
+    )
+}

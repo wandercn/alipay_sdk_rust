@@ -6,7 +6,7 @@ use gostd::{
     io::{ByteWriter, StringWriter},
 };
 use rsa::{
-    pkcs1::DecodeRsaPrivateKey, pkcs8::DecodePublicKey, Hash, PaddingScheme, PublicKey,
+    pkcs1::DecodeRsaPrivateKey, pkcs8::DecodePublicKey, pkcs8::DecodePrivateKey, Hash, PaddingScheme, PublicKey,
     RsaPrivateKey, RsaPublicKey,
 };
 use std::{
@@ -118,9 +118,13 @@ pub fn load_private_key(private_key_str: &str) -> AliPayResult<RsaPrivateKey> {
         RsaPrivateKey::from_pkcs1_pem(&format_pkcs1_private_key(private_key_str))
     {
         Ok(private_key)
+    } else if let Ok(private_key) =
+        RsaPrivateKey::from_pkcs8_pem(&format_pkcs8_private_key(private_key_str))
+    {
+        Ok(private_key)
     } else {
         Err(AliPayError(
-            "RsaPrivateKey from_pkcs1_pem failed".to_string(),
+            "RsaPrivateKey load failed: neither PKCS1 nor PKCS8".to_string(),
         ))
     }
 }
