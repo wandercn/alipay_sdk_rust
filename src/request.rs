@@ -86,6 +86,7 @@ impl Requester for Request {
             version: pay_config.version(),
             timestamp: get_now_beijing_time_str(),
             notify_url: pay_config.notify_url(),
+            return_url: pay_config.return_url(),
             ..Default::default()
         }
     }
